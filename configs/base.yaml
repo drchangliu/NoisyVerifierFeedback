@@ -1,0 +1,36 @@
+benchmark:
+  name: "cweval"
+  calibration_fraction: 0.25
+
+analyzer:
+  name: "semgrep"
+  config: "auto"
+  timeout: 30
+
+agent:
+  model: "claude-sonnet-4-20250514"
+  max_iterations: 5
+  temperature: 0.2
+
+feedback:
+  condition: "naive"
+  format: "natural_language"
+
+selective:
+  threshold_tau: 0.5
+
+llm_judge:
+  model: "claude-haiku-4-5-20251001"
+
+execution:
+  timeout: 10
+  sandbox: "subprocess"
+
+budget:
+  max_cost_usd: 100.0
+
+output:
+  dir: "data/results"
+  run_id: null
+
+seed: 42

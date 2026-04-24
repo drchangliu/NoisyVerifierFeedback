@@ -1,0 +1,29 @@
+[
+  {
+    "item_id": "CWE-020_0",
+    "cwe_id": "CWE-020",
+    "iterations": 1,
+    "final_functional": true,
+    "final_secure": true,
+    "joint_pass": true,
+    "cost_usd": 0.0020184
+  },
+  {
+    "item_id": "CWE-022_0",
+    "cwe_id": "CWE-022",
+    "iterations": 1,
+    "final_functional": true,
+    "final_secure": true,
+    "joint_pass": true,
+    "cost_usd": 0.0015032000000000001
+  },
+  {
+    "item_id": "CWE-078_0",
+    "cwe_id": "CWE-078",
+    "iterations": 1,
+    "final_functional": true,
+    "final_secure": true,
+    "joint_pass": true,
+    "cost_usd": 0.0010584
+  }
+]

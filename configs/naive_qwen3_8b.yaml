@@ -1,0 +1,6 @@
+feedback:
+  condition: "naive"
+agent:
+  model: "qwen3:8b"
+  ollama_base_url: "http://localhost:11434"
+  temperature: 0.2

@@ -1,0 +1,9 @@
+feedback:
+  condition: "llm_judge"
+agent:
+  model: "qwen3:8b"
+  ollama_base_url: "http://localhost:11434"
+  temperature: 0.2
+llm_judge:
+  model: "qwen3:8b"
+  ollama_base_url: "http://localhost:11434"

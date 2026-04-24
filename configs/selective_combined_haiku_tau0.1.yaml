@@ -1,0 +1,9 @@
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "selective"
+agent:
+  model: "claude-haiku-4-5-20251001"
+selective:
+  threshold_tau: 0.1

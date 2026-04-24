@@ -1,0 +1,15 @@
+benchmark:
+  name: "securityeval"
+  calibration_fraction: 0.0
+
+analyzer:
+  name: "combined"
+  timeout: 30
+
+feedback:
+  condition: "naive"
+
+agent:
+  model: "qwen3:8b"
+  ollama_base_url: "http://localhost:11434"
+  temperature: 0.2

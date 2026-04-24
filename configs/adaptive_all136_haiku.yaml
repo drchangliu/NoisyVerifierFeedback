@@ -1,0 +1,14 @@
+benchmark:
+  name: "combined_all"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "adaptive"
+agent:
+  model: "claude-haiku-4-5-20251001"
+
+  temperature: 0.2
+adaptive:
+  prior_strength: 1.0

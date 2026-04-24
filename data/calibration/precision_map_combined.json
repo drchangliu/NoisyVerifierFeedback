@@ -1,0 +1,602 @@
+{
+  "trailofbits.python.tarfile-extractall-traversal.tarfile-extractall-traversal": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B602": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B404": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B607": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B603": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.eval-detected.eval-detected": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7841002756996854
+  },
+  "B307": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7841002756996854
+  },
+  "python.pycryptodome.security.insufficient-rsa-key-size.insufficient-rsa-key-size": {
+    "precision": 0.5,
+    "tp_count": 1,
+    "fp_count": 1,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B413": {
+    "precision": 0.07692307692307693,
+    "tp_count": 1,
+    "fp_count": 12,
+    "n_samples": 13,
+    "ci_lower": 0.0,
+    "ci_upper": 0.45359266556062827
+  },
+  "B324": {
+    "precision": 0.5,
+    "tp_count": 2,
+    "fp_count": 2,
+    "n_samples": 4,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.jwt.security.unverified-jwt-decode.unverified-jwt-decode": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B306": {
+    "precision": 0.6666666666666666,
+    "tp_count": 2,
+    "fp_count": 1,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.formatted-sql-query.formatted-sql-query": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7841002756996854
+  },
+  "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 4,
+    "n_samples": 4,
+    "ci_lower": 0.0,
+    "ci_upper": 0.6790507578703098
+  },
+  "B608": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 4,
+    "n_samples": 4,
+    "ci_lower": 0.0,
+    "ci_upper": 0.6790507578703098
+  },
+  "B506": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B405": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7841002756996854
+  },
+  "B314": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7841002756996854
+  },
+  "python.flask.security.audit.xss.make-response-with-unknown-content.make-response-with-unknown-content": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 4,
+    "n_samples": 4,
+    "ci_lower": 0.0,
+    "ci_upper": 0.6790507578703098
+  },
+  "python.flask.security.insecure-deserialization.insecure-deserialization": {
+    "precision": 0.5,
+    "tp_count": 1,
+    "fp_count": 1,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.deserialization.pickle.avoid-pickle": {
+    "precision": 0.75,
+    "tp_count": 3,
+    "fp_count": 1,
+    "n_samples": 4,
+    "ci_lower": 0.07094924212969023,
+    "ci_upper": 1.0
+  },
+  "B403": {
+    "precision": 0.6666666666666666,
+    "tp_count": 2,
+    "fp_count": 1,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B301": {
+    "precision": 0.5,
+    "tp_count": 1,
+    "fp_count": 1,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.flask.security.open-redirect.open-redirect": {
+    "precision": 0.5,
+    "tp_count": 2,
+    "fp_count": 2,
+    "n_samples": 4,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B310": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.django.security.injection.path-traversal.path-traversal-open.path-traversal-open": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.flask.security.injection.path-traversal-open.path-traversal-open": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B108": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "python.django.security.injection.command.command-injection-os-system.command-injection-os-system": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "python.flask.security.injection.os-system-injection.os-system-injection": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "python.lang.security.dangerous-system-call.dangerous-system-call": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B605": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7841002756996854
+  },
+  "python.flask.security.xss.audit.direct-use-of-jinja2.direct-use-of-jinja2": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B701": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.django.security.injection.raw-html-format.raw-html-format": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.flask.security.injection.raw-html-concat.raw-html-format": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B106": {
+    "precision": 0.16666666666666666,
+    "tp_count": 1,
+    "fp_count": 5,
+    "n_samples": 6,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7211092887441557
+  },
+  "python.flask.security.injection.user-exec.exec-injection": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "python.lang.security.audit.exec-detected.exec-detected": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "B102": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 2,
+    "n_samples": 2,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9603227913199207
+  },
+  "python.django.security.injection.code.user-exec-format-string.user-exec-format-string": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.flask.security.audit.app-run-security-config.avoid_using_app_run_directly": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.flask.security.audit.debug-enabled.debug-enabled": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B201": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B105": {
+    "precision": 0.25,
+    "tp_count": 1,
+    "fp_count": 3,
+    "n_samples": 4,
+    "ci_lower": 0.0,
+    "ci_upper": 0.9290507578703098
+  },
+  "python.requests.security.disabled-cert-validation.disabled-cert-validation": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B501": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B113": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 3,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 0.7841002756996854
+  },
+  "python.flask.security.audit.secure-set-cookie.secure-set-cookie": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.insecure-transport.ftplib.use-ftp-tls.use-ftp-tls": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B402": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B321": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B505": {
+    "precision": 1.0,
+    "tp_count": 2,
+    "fp_count": 0,
+    "n_samples": 2,
+    "ci_lower": 0.03967720868007929,
+    "ci_upper": 1.0
+  },
+  "python.pycryptodome.security.insufficient-dsa-key-size.insufficient-dsa-key-size": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.pycryptodome.security.insecure-cipher-algorithm-des.insecure-cipher-algorithm-des": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.ssl-wrap-socket-is-deprecated.ssl-wrap-socket-is-deprecated": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B504": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B311": {
+    "precision": 0.3333333333333333,
+    "tp_count": 1,
+    "fp_count": 2,
+    "n_samples": 3,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.django.security.audit.xss.direct-use-of-httpresponse.direct-use-of-httpresponse": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.deserialization.pickle.avoid-cPickle": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.md5-used-as-password.md5-used-as-password": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.django.security.injection.open-redirect.open-redirect": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.network.bind.avoid-bind-to-all-interfaces": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B104": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B406": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B317": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B101": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.audit.insecure-file-permissions.insecure-file-permissions": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "B103": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.lang.security.insecure-hash-function.insecure-hash-function": {
+    "precision": 0.0,
+    "tp_count": 0,
+    "fp_count": 1,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.django.security.injection.tainted-url-host.tainted-url-host": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.flask.security.injection.tainted-url-host.tainted-url-host": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  },
+  "python.django.security.injection.ssrf.ssrf-injection-requests.ssrf-injection-requests": {
+    "precision": 1.0,
+    "tp_count": 1,
+    "fp_count": 0,
+    "n_samples": 1,
+    "ci_lower": 0.0,
+    "ci_upper": 1.0
+  }
+}

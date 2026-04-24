@@ -1,0 +1,13 @@
+{
+  "feedback": {
+    "condition": "selective"
+  },
+  "agent": {
+    "model": "synthetic",
+    "max_iterations": 5
+  },
+  "benchmark": {
+    "name": "synthetic"
+  },
+  "synthetic": true
+}

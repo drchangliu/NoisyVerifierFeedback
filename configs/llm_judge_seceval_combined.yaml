@@ -1,0 +1,14 @@
+# SecurityEval + combined analyzers (Semgrep + Bandit)
+benchmark:
+  name: "securityeval"
+  calibration_fraction: 0.0
+
+analyzer:
+  name: "combined"
+  timeout: 30
+
+feedback:
+  condition: "llm_judge"
+
+llm_judge:
+  model: "claude-haiku-4-5-20251001"

@@ -1,0 +1,6 @@
+# Condition (b): Surface only high-precision findings
+feedback:
+  condition: "selective"
+
+selective:
+  threshold_tau: 0.5

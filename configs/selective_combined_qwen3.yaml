@@ -1,0 +1,15 @@
+# CWEval + combined analyzers (Semgrep + Bandit) + qwen3:8b
+analyzer:
+  name: "combined"
+  timeout: 30
+
+feedback:
+  condition: "selective"
+
+agent:
+  model: "qwen3:8b"
+  ollama_base_url: "http://localhost:11434"
+  temperature: 0.2
+
+selective:
+  threshold_tau: 0.5

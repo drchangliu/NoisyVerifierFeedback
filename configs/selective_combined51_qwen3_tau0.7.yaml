@@ -1,0 +1,14 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "selective"
+agent:
+  model: "qwen3:8b"
+  ollama_base_url: "http://localhost:11434"
+  temperature: 0.2
+selective:
+  threshold_tau: 0.7

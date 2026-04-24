@@ -1,0 +1,3 @@
+# Condition (a): Surface all analyzer findings each iteration
+feedback:
+  condition: "naive"

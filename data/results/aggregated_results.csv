@@ -1,0 +1,19 @@
+key,label,n_seeds,jp0_mean,jp0_ci,jpf_mean,jpf_ci,cost_mean
+haiku|llm_judge|combined|natural_language,haiku / llm_judge / combined,5,0.7157894736842105,0.025268420504500122,0.7473684210526316,0.02063157894736844,0.03585424
+haiku|naive|combined|minimal,haiku / naive / combined / minimal,1,0.6842105263157895,0,0.631578947368421,0,0.0750536
+haiku|naive|combined|natural_language,haiku / naive / combined,7,0.7218045112781954,0.029473684210526305,0.7293233082706766,0.026905669491481838,0.05688537142857143
+haiku|naive|combined|raw_sarif,haiku / naive / combined / raw_sarif,1,0.7368421052631579,0,0.7368421052631579,0,0.0734344
+haiku|selective(τ=0.1)|combined|natural_language,haiku / selective(τ=0.1) / combined,3,0.7192982456140351,0.0687719298245614,0.736842105263158,0.05955823829535087,0.028275466666666665
+haiku|selective(τ=0.3)|combined|natural_language,haiku / selective(τ=0.3) / combined,3,0.7543859649122807,0.03438596491228074,0.7719298245614036,0.034385964912280735,0.028934666666666668
+haiku|selective(τ=0.5)|combined|natural_language,haiku / selective(τ=0.5) / combined,5,0.7263157894736841,0.038598149884615386,0.7473684210526316,0.02063157894736844,0.0285032
+haiku|selective(τ=0.7)|combined|natural_language,haiku / selective(τ=0.7) / combined,3,0.7368421052631579,0.0,0.7368421052631579,0.0,0.029295200000000004
+haiku|selective(τ=0.9)|combined|natural_language,haiku / selective(τ=0.9) / combined,3,0.7719298245614036,0.03438596491228074,0.7719298245614036,0.03438596491228074,0.02788986666666667
+qwen3-8b|llm_judge|combined|natural_language,qwen3-8b / llm_judge / combined,10,0.4052631578947368,0.03094736842105263,0.3210526315789473,0.0359000013288854,0.0
+qwen3-8b|naive|combined|minimal,qwen3-8b / naive / combined / minimal,1,0.3684210526315789,0,0.2631578947368421,0,0.0
+qwen3-8b|naive|combined|natural_language,qwen3-8b / naive / combined,11,0.43939393939393945,0.09122609939763529,0.3558213716108453,0.121490328758876,0.0
+qwen3-8b|naive|combined|raw_sarif,qwen3-8b / naive / combined / raw_sarif,1,0.47368421052631576,0,0.3157894736842105,0,0.0
+qwen3-8b|selective(τ=0.1)|combined|natural_language,qwen3-8b / selective(τ=0.1) / combined,1,0.42105263157894735,0,0.42105263157894735,0,0.0
+qwen3-8b|selective(τ=0.3)|combined|natural_language,qwen3-8b / selective(τ=0.3) / combined,1,0.42105263157894735,0,0.42105263157894735,0,0.0
+qwen3-8b|selective(τ=0.5)|combined|natural_language,qwen3-8b / selective(τ=0.5) / combined,11,0.445933014354067,0.08425590773707899,0.4698564593301436,0.07830481619232589,0.0
+qwen3-8b|selective(τ=0.7)|combined|natural_language,qwen3-8b / selective(τ=0.7) / combined,1,0.3684210526315789,0,0.42105263157894735,0,0.0
+qwen3-8b|selective(τ=0.9)|combined|natural_language,qwen3-8b / selective(τ=0.9) / combined,1,0.3684210526315789,0,0.42105263157894735,0,0.0

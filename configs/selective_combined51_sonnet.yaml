@@ -1,0 +1,14 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "selective"
+agent:
+  model: "claude-sonnet-4-20250514"
+selective:
+  threshold_tau: 0.5
+llm_judge:
+  model: "claude-haiku-4-5-20251001"

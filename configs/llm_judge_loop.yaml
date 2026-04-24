@@ -1,0 +1,6 @@
+# Condition (c): Use cheap model to pre-triage findings
+feedback:
+  condition: "llm_judge"
+
+llm_judge:
+  model: "claude-haiku-4-5-20251001"
