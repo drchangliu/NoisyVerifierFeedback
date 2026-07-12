@@ -166,12 +166,26 @@ def main() -> None:
         fam = {"haiku": "#1f77b4", "sonnet": "#d62728", "gemma": "#2ca02c",
                "qwen": "#9467bd", "llama": "#ff7f0e", "deepseek": "#8c564b",
                "glm": "#17becf"}
+        # Hand-tuned per-label offsets (points) for crowded regions; keys are
+        # cohort labels. Default is right-above the marker.
+        nudge = {
+            "gemma4-31b": (-8, 5),
+            "qwen3.5-27b": (-8, -13),
+            "sonnet46": (2, 9),
+            "opus-4.8": (-6, -13),
+            "qwen3-coder-480b(cloud)": (-8, -3),
+            "deepseek-v4-flash(cloud)": (4, -13),
+            "haiku-4.5": (-8, -11),
+            "glm-4.6(cloud)": (6, 6),
+        }
         fig, ax = plt.subplots(figsize=(8, 5.5))
         for coh, c, q, r, tn, fn in rows:
             color = next((v for k, v in fam.items() if k in coh), "#7f7f7f")
             ax.scatter(c, r, s=70, color=color, zorder=3)
+            dx, dy = nudge.get(coh, (6, 4))
             ax.annotate(LABELS.get(coh, coh), (c, r), textcoords="offset points",
-                        xytext=(6, 4), fontsize=7.5)
+                        xytext=(dx, dy), fontsize=7.5,
+                        ha="right" if dx < 0 else "left")
         # OLS trend line
         n = len(caps)
         mx, my = mean(caps), mean(rs)
