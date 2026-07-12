@@ -1,15 +1,22 @@
-# Replication Package: Selective Feedback for Noisy Verifiers in LLM Code Agents
+# Selective Feedback for Noisy Verifiers in LLM Code Agents
 
-Replication package for the manuscript *"Selective Feedback for Noisy Verifiers
-in LLM Code Agents: When Static Analyzers Mislead Language Models"* (Chang Liu,
-Ohio University; under review at *Empirical Software Engineering*, submitted
-July 2026).
+Ongoing home of the noisy-verifier feedback project (Chang Liu, Ohio
+University): framework, benchmarks, raw traces, and analysis for studying how
+LLM code agents should consume noisy static-analyzer findings. The project
+derives the optimal precision threshold τ\* = r/(q+r) for surfacing findings
+to an agent, and shows empirically — currently across 16 distinct models from
+six developers — that the counterfactual regression rate *r* falls with model
+capability while the fix rate *q* stays flat, so fixed feedback policies do
+not transfer across model snapshots.
 
-The paper derives the optimal precision threshold τ\* = r/(q+r) for surfacing
-noisy static-analyzer findings to an LLM code agent, and shows empirically —
-across 16 distinct models from six developers — that the counterfactual
-regression rate *r* falls with model capability while the fix rate *q* stays
-flat, so fixed feedback policies do not transfer across model snapshots.
+This repository is **live**: numbers are refreshed as new model cohorts are
+measured and the benchmark expands over time. The first full study is described
+in the manuscript *"Selective Feedback for Noisy Verifiers in LLM Code Agents:
+When Static Analyzers Mislead Language Models"* (under review at *Empirical
+Software Engineering*, submitted July 2026); the exact repository state that
+paper reports on is preserved as the git tag
+[`emse-2026-07`](../../releases/tag/emse-2026-07), so the paper's numbers stay
+reproducible while the main branch moves on.
 
 ## Contents
 
@@ -19,7 +26,7 @@ flat, so fixed feedback policies do not transfer across model snapshots.
 | `scripts/` | Every experiment and analysis script; each result in the paper maps to one script (table below) |
 | `configs/` | Exact run configurations for all reported experiments |
 | `data/calibration/` | Per-rule precision calibration data (151 findings, 75 rules) |
-| `data/results/` | Raw traces for all 798 experiment runs (`traces.jsonl` + `config.yaml` per run) — the paper's primary data |
+| `data/results/` | Raw traces for every experiment run to date (798 as of July 2026; `traces.jsonl` + `config.yaml` per run) — the project's primary data |
 | `data/humaneval/` | HumanEval pass@1 records for the external capability axis (per-model JSONL) |
 | `data/smoke_tests/` | Pilot traces, including the Claude Fable 5 refusal probe cited in the paper (9/10 generations refused) |
 | `data/raw/` | Benchmark items (CWEval, SecurityEval incl. our hand-authored oracles, SecCodePLT) |
@@ -39,6 +46,11 @@ Analysis scripts below run **entirely from the released traces** — no API key
 or GPU needed to reproduce every number and figure in the paper.
 
 ## Reproducing the paper's results
+
+Every number and figure in the EMSE manuscript regenerates from the released
+traces with the commands below. To match the paper exactly, check out the
+submission tag first (`git checkout emse-2026-07`); on the main branch the
+same commands reflect the latest data.
 
 | Paper result | Command |
 |---|---|
