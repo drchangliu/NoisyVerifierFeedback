@@ -7,7 +7,7 @@ July 2026).
 
 The paper derives the optimal precision threshold τ\* = r/(q+r) for surfacing
 noisy static-analyzer findings to an LLM code agent, and shows empirically —
-across 15 distinct models from six developers — that the counterfactual
+across 16 distinct models from six developers — that the counterfactual
 regression rate *r* falls with model capability while the fix rate *q* stays
 flat, so fixed feedback policies do not transfer across model snapshots.
 
@@ -19,8 +19,9 @@ flat, so fixed feedback policies do not transfer across model snapshots.
 | `scripts/` | Every experiment and analysis script; each result in the paper maps to one script (table below) |
 | `configs/` | Exact run configurations for all reported experiments |
 | `data/calibration/` | Per-rule precision calibration data (151 findings, 75 rules) |
-| `data/results/` | Raw traces for all 790 experiment runs (`traces.jsonl` + `config.yaml` per run) — the paper's primary data |
+| `data/results/` | Raw traces for all 798 experiment runs (`traces.jsonl` + `config.yaml` per run) — the paper's primary data |
 | `data/humaneval/` | HumanEval pass@1 records for the external capability axis (per-model JSONL) |
+| `data/smoke_tests/` | Pilot traces, including the Claude Fable 5 refusal probe cited in the paper (9/10 generations refused) |
 | `data/raw/` | Benchmark items (CWEval, SecurityEval incl. our hand-authored oracles, SecCodePLT) |
 | `figures/` | All paper figures as generated |
 | `tests/` | Unit and integration tests (`make test`, `make test-integration`) |

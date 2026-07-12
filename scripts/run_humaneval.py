@@ -50,6 +50,8 @@ MODELS = [
     ("haiku-4.5",         "claude-haiku-4-5-20251001", None),
     ("sonnet4",           "claude-sonnet-4-20250514",  None),
     ("sonnet46",          "claude-sonnet-4-6",         None),
+    ("opus-4.8",          "claude-opus-4-8",           None),
+    ("fable-5",           "claude-fable-5",            None),
     ("gemma4-31b",        "gemma4:31b",                OLLAMA),
     ("gemma3-27b",        "gemma3:27b",                OLLAMA),
     ("qwen3-8b",          "qwen3:8b",                  OLLAMA),

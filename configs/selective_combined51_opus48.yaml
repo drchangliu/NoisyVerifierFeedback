@@ -1,0 +1,17 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "selective"
+agent:
+  model: "claude-opus-4-8"
+  # Opus 4.8 rejects temperature/top_p/top_k (400); run variation comes from
+  # nondeterministic serving, matching the no-temperature Claude-5-era protocol.
+  temperature: null
+selective:
+  threshold_tau: 0.5
+llm_judge:
+  model: "claude-haiku-4-5-20251001"

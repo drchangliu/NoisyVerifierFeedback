@@ -24,11 +24,20 @@ class LLMClient:
     # Approximate per-token pricing (USD per 1K tokens)
     PRICING = {
         "claude-sonnet-4-20250514": {"input": 0.003, "output": 0.015},
+        "claude-sonnet-4-6": {"input": 0.003, "output": 0.015},
         "claude-haiku-4-5-20251001": {"input": 0.0008, "output": 0.004},
         "claude-opus-4-20250514": {"input": 0.015, "output": 0.075},
+        "claude-opus-4-8": {"input": 0.005, "output": 0.025},
+        "claude-fable-5": {"input": 0.010, "output": 0.050},
         "gpt-4o": {"input": 0.0025, "output": 0.01},
         "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
     }
+
+    # Models that reject temperature/top_p/top_k with a 400 (Opus 4.7+ and the
+    # Claude 5 family). Seed variation for these cohorts comes from the
+    # provider's nondeterministic serving, not a temperature setting.
+    NO_SAMPLING_PARAMS = ("claude-opus-4-7", "claude-opus-4-8",
+                          "claude-fable-5", "claude-sonnet-5", "claude-mythos")
 
     def __init__(
         self,
@@ -71,7 +80,7 @@ class LLMClient:
         kwargs = {"model": self.model, "max_tokens": self.max_tokens, "messages": user_messages}
         if system:
             kwargs["system"] = system
-        if self.temperature is not None:
+        if self.temperature is not None and not self.model.startswith(self.NO_SAMPLING_PARAMS):
             kwargs["temperature"] = self.temperature
 
         response = self._anthropic.messages.create(**kwargs)
@@ -80,8 +89,15 @@ class LLMClient:
         output_tokens = response.usage.output_tokens
         cost = self._compute_cost(input_tokens, output_tokens)
 
+        # Fable 5 responses lead with thinking blocks (empty text) before the
+        # text block, and a refusal has an empty content list -- so join the
+        # text blocks rather than assume content[0] is text.
+        text = "".join(
+            b.text for b in response.content if getattr(b, "type", "") == "text"
+        )
+
         return LLMResponse(
-            content=response.content[0].text,
+            content=text,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             cost_usd=cost,

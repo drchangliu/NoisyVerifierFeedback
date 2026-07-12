@@ -22,6 +22,7 @@ class IterationRecord:
     tests_passed: bool | None = None
     has_vulnerability: bool | None = None
     cost_usd: float = 0.0
+    stop_reason: str = ""  # of the LLM call this record's cost covers ("refusal" = declined)
 
 
 @dataclass
@@ -54,6 +55,7 @@ class AgentTrace:
                 "tests_passed": rec.tests_passed,
                 "has_vulnerability": rec.has_vulnerability,
                 "cost_usd": rec.cost_usd,
+                "stop_reason": rec.stop_reason,
             })
         return d
 
@@ -122,6 +124,7 @@ class CodeAgent(ABC):
                 findings=findings,
                 feedback_shown=feedback_shown,
                 cost_usd=response.cost_usd if i == 0 else 0.0,
+                stop_reason=response.stop_reason if i == 0 else "",
             )
             trace.iterations.append(record)
 
@@ -139,9 +142,16 @@ class CodeAgent(ABC):
                     )},
                 ]
             )
-            code = extract_code(response.content)
+            # An empty response (e.g. a Fable 5 safety refusal) means the model
+            # produced no edit; keep the previous code rather than replacing it
+            # with "" -- wiping working code would count an API-side refusal as
+            # a model-caused regression in r.
+            new_code = extract_code(response.content)
+            if new_code:
+                code = new_code
             trace.total_cost_usd += response.cost_usd
             record.cost_usd = response.cost_usd
+            record.stop_reason = response.stop_reason
 
         return trace
 

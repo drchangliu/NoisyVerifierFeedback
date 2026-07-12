@@ -1,0 +1,19 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "naive"
+agent:
+  model: "claude-fable-5"
+  # Fable 5 rejects temperature/top_p/top_k (400) and always thinks; thinking
+  # tokens count against max_tokens, so give headroom (the 4096 default
+  # silently truncates thinking models -- see the HumanEval token-cap bug).
+  temperature: null
+  max_tokens: 16384
+selective:
+  threshold_tau: 0.5
+llm_judge:
+  model: "claude-haiku-4-5-20251001"

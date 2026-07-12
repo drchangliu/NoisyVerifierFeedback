@@ -50,6 +50,7 @@ def build_agent(config: dict):
         model=config["agent"]["model"],
         temperature=config["agent"]["temperature"],
         ollama_base_url=ollama_url,
+        max_tokens=config["agent"].get("max_tokens") or 4096,
     )
 
     # Build analyzer

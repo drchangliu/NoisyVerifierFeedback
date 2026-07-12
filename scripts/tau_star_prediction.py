@@ -56,6 +56,10 @@ PROSPECTIVE_MODELS = {
     "glm-4.6:cloud": "glm-4.6(cloud)",
     "qwen3-coder:480b-cloud": "qwen3-coder-480b(cloud)",
     "deepseek-v4-flash:cloud": "deepseek-v4-flash(cloud)",
+    # Anthropic API frontier cohorts (July 2026): further out-of-sample points
+    # at the high-capability end. Keyed by exact API model ID.
+    "claude-opus-4-8": "opus-4.8",
+    "claude-fable-5": "fable-5",
 }
 LABELS.update({v: v for v in PROSPECTIVE_MODELS.values()})
 
