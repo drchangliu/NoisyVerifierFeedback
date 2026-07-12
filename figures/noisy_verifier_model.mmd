@@ -1,0 +1,28 @@
+flowchart LR
+    subgraph loop["Iterate (max 5 rounds)"]
+        direction LR
+        A["LLM Agent<br/>generates C_k"] -->|code| B["Analyzers<br/>Semgrep + Bandit<br/>F = V(C_k)<br/>75 rules, 23 findings"]
+        B -->|findings| C["Feedback Policy<br/>select S ⊆ F<br/>where p̂_i ≥ τ"]
+        C -->|filtered<br/>findings| D["LLM Agent<br/>revises → C_{k+1}"]
+    end
+    D -.->|next iteration| A
+
+    C --- decision
+
+    subgraph decision["Per-finding decision: surface finding i only if p̂_i ≥ τ* = r/(q+r)"]
+        direction LR
+        TP["✅ True Positive surfaced<br/>prob p_i: finding IS a vulnerability<br/>LLM fixes with prob q<br/>Haiku: q=0.26 | Qwen: q=0.42"]
+        FP["❌ False Positive surfaced<br/>prob 1−p_i: finding is NOT a vulnerability<br/>LLM 'fix' causes regression with prob r<br/>Haiku: r=0.00 | Qwen: r=0.43"]
+    end
+
+    TP -.- jp_up["→ JointPass improves"]
+    FP -.- jp_down["→ JointPass degrades"]
+
+    style A fill:#d4edda,stroke:#28a745
+    style B fill:#fff3cd,stroke:#ffc107
+    style C fill:#cce5ff,stroke:#0d6efd
+    style D fill:#d4edda,stroke:#28a745
+    style TP fill:#d4edda,stroke:#28a745
+    style FP fill:#f8d7da,stroke:#dc3545
+    style loop fill:#f8f9fa,stroke:#6c757d
+    style decision fill:#fff8e1,stroke:#ff9800

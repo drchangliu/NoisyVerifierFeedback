@@ -1,0 +1,12 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "naive"
+agent:
+  model: "deepseek-v4-flash:cloud"
+  ollama_base_url: "http://localhost:11435"
+  temperature: 0.2

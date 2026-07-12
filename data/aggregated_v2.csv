@@ -1,0 +1,18 @@
+cohort,label,condition,n_seeds,jp0_mean,jp0_ci_95,jpf_mean,jpf_ci_95,gain_pp,engaged_mean,r_proxy_num,r_proxy_den,r_proxy_pct,cost_total_usd
+sonnet-4.6,"Sonnet 4.6 v2 batch (n=20 per cell, 51-item)",adaptive,20,0.5667,0.0026,0.5863,0.0026,1.96,6,0,20,0.0,3.4472
+sonnet-4.6,"Sonnet 4.6 v2 batch (n=20 per cell, 51-item)",llm_judge,20,0.5637,0.0038,0.6735,0.0064,10.98,19.95,0,120,0.0,4.4941
+sonnet-4.6,"Sonnet 4.6 v2 batch (n=20 per cell, 51-item)",naive,20,0.5676,0.0019,0.651,0.0045,8.33,23,15,180,8.3,7.9423
+sonnet-4.6,"Sonnet 4.6 v2 batch (n=20 per cell, 51-item)",selective,20,0.5618,0.0042,0.5814,0.0042,1.96,6,0,20,0.0,3.4308
+gemma-v2,"Gemma4-31B v2 batch (n=11-12 per cell, 51-item)",llm_judge,12,0.567,0.012,0.616,0.0153,4.9,15.75,3,83,3.6,0.0
+gemma-v2,"Gemma4-31B v2 batch (n=11-12 per cell, 51-item)",naive,11,0.5472,0.0204,0.5561,0.0174,0.89,19.82,25,103,24.3,0.0
+gemma-v2,"Gemma4-31B v2 batch (n=11-12 per cell, 51-item)",selective,12,0.5425,0.0128,0.5621,0.0119,1.96,5.67,0,12,0.0,0.0
+qwen-v2,"Qwen3-8B v2 batch (n=8-12 per cell, 51-item)",llm_judge,12,0.3448,0.0198,0.3758,0.0221,3.1,14.58,27,55,49.1,0.0
+qwen-v2,"Qwen3-8B v2 batch (n=8-12 per cell, 51-item)",naive,12,0.3584,0.0229,0.3748,0.0219,1.64,15.33,39,62,62.9,0.0
+qwen-v2,"Qwen3-8B v2 batch (n=8-12 per cell, 51-item)",selective,8,0.3529,0.023,0.4093,0.0256,5.64,6.88,1,8,12.5,0.0
+qwen-v2,"Qwen3-8B v2 batch (n=8-12 per cell, 51-item)",selective_tau0.1,4,0.3824,0.0333,0.4363,0.0242,5.39,7.25,0,4,0.0,0.0
+qwen-v2,"Qwen3-8B v2 batch (n=8-12 per cell, 51-item)",selective_tau0.3,4,0.4167,0.0242,0.451,0.0157,3.43,5.75,0,4,0.0,0.0
+qwen-v2,"Qwen3-8B v2 batch (n=8-12 per cell, 51-item)",selective_tau0.7,4,0.3809,0.0396,0.416,0.0397,3.51,3.25,0,0,,0.0
+qwen-v2,"Qwen3-8B v2 batch (n=8-12 per cell, 51-item)",selective_tau0.9,3,0.3464,0.0128,0.366,0.0128,1.96,2,0,0,,0.0
+haiku-v2,"Haiku v2 batch (n=7-8 per cell, 51-item)",llm_judge,7,0.4734,0.0155,0.5434,0.0071,7.0,17.43,7,38,18.4,0.7263
+haiku-v2,"Haiku v2 batch (n=7-8 per cell, 51-item)",naive,8,0.4877,0.0135,0.5515,0.0113,6.37,22,10,78,12.8,1.2451
+haiku-v2,"Haiku v2 batch (n=7-8 per cell, 51-item)",selective,7,0.4818,0.0142,0.5154,0.011,3.36,7.29,0,12,0.0,0.5233

@@ -34,12 +34,16 @@ plt.rcParams.update({
 })
 
 # Colors
-C_HAIKU = "#2166ac"
-C_QWEN = "#b2182b"
+C_HAIKU  = "#2166ac"  # low-r model 1
+C_GEMMA  = "#1a9850"  # low-r model 2
+C_SONNET = "#762a83"  # high-r model 1
+C_QWEN   = "#b2182b"  # high-r model 2
 
-# Pooled τ* from Table 1 in paper
-TAU_TRUE_HAIKU = 0.0    # r=0 for Haiku → τ*=0
-TAU_TRUE_QWEN = 0.503   # r/(q+r) for Qwen
+# Pooled τ* from Table 5 in paper (see scripts/compute_qr.py)
+TAU_TRUE_HAIKU  = 0.262
+TAU_TRUE_GEMMA  = 0.322
+TAU_TRUE_SONNET = 0.704
+TAU_TRUE_QWEN   = 0.656
 
 
 def reconstruct_tau_trajectory(traces_path: Path) -> dict:
@@ -211,73 +215,72 @@ def main():
     fig_dir = Path("figures")
     fig_dir.mkdir(exist_ok=True)
 
-    # Collect empirical runs
-    haiku_50 = collect_runs(results_dir, "haiku", 50)
-    qwen_50 = collect_runs(results_dir, "qwen3", 50)
-    haiku_136 = collect_runs(results_dir, "haiku", 136)
-    qwen_136 = collect_runs(results_dir, "qwen3", 136)
+    # Collect empirical runs across all four models.
+    haiku_50  = collect_runs(results_dir, "haiku",      50) + collect_runs(results_dir, "haiku",      51)
+    qwen_50   = collect_runs(results_dir, "qwen3",      50) + collect_runs(results_dir, "qwen3",      51)
+    sonnet_50 = collect_runs(results_dir, "sonnet",     51)
+    gemma_50  = collect_runs(results_dir, "gemma4:31b", 51)
+    haiku_136 = collect_runs(results_dir, "haiku",     136) + collect_runs(results_dir, "haiku",     137)
+    qwen_136  = collect_runs(results_dir, "qwen3",     136)
 
-    print(f"Haiku 50-item runs: {len(haiku_50)}")
-    print(f"Qwen  50-item runs: {len(qwen_50)}")
+    print(f"Haiku 50/51-item runs:    {len(haiku_50)}")
+    print(f"Sonnet 51-item runs:      {len(sonnet_50)}")
+    print(f"Gemma4-31B 51-item runs:  {len(gemma_50)}")
+    print(f"Qwen3-8B 50/51-item runs: {len(qwen_50)}")
+    print(f"Haiku 136-item runs:      {len(haiku_136)}")
 
-    # Generate simulation runs (matching empirical update sparsity)
+    # Simulation runs (matching empirical update sparsity).
     n_sim = 10
-    sim_haiku = [simulate_adaptive(q_true=0.262, r_true=0.0, n_items=150,
-                                    n_update_fraction=0.16, seed=42+i)
-                 for i in range(n_sim)]
-    sim_qwen = [simulate_adaptive(q_true=0.423, r_true=0.429, n_items=150,
-                                   n_update_fraction=0.16, seed=100+i)
-                for i in range(n_sim)]
+    sim_haiku  = [simulate_adaptive(0.225, 0.080, n_items=150, n_update_fraction=0.16, seed=42+i)  for i in range(n_sim)]
+    sim_sonnet = [simulate_adaptive(0.211, 0.500, n_items=150, n_update_fraction=0.16, seed=80+i)  for i in range(n_sim)]
+    sim_gemma  = [simulate_adaptive(0.386, 0.183, n_items=150, n_update_fraction=0.16, seed=120+i) for i in range(n_sim)]
+    sim_qwen   = [simulate_adaptive(0.280, 0.533, n_items=150, n_update_fraction=0.16, seed=160+i) for i in range(n_sim)]
 
-    # ── 2×2 Figure ────────────────────────────────────────────────────────
-    fig = plt.figure(figsize=(10, 7))
-    gs = gridspec.GridSpec(2, 2, hspace=0.35, wspace=0.08)
+    fig = plt.figure(figsize=(16, 7))
+    gs = gridspec.GridSpec(2, 4, hspace=0.40, wspace=0.10)
 
-    # ── Top row: Simulation ───────────────────────────────────────────────
-    ax_sh = fig.add_subplot(gs[0, 0])
-    ax_sh.set_title("(a) Simulation: Haiku-like ($q{=}0.26, r{=}0$)")
-    for i, run in enumerate(sim_haiku):
-        xs = np.arange(len(run["tau_at_item"]))
-        label = f"Simulated runs ($n$={n_sim})" if i == 0 else None
-        ax_sh.step(xs, run["tau_at_item"], where="post",
-                   color=C_HAIKU, alpha=0.35, linewidth=0.9, label=label)
-    ax_sh.axhline(TAU_TRUE_HAIKU, color="#555555", linestyle=":", linewidth=1.0,
-                  label=r"True $\tau^* = 0.00$")
-    ax_sh.axhline(0.5, color="#aaaaaa", linestyle="-", linewidth=0.5, alpha=0.4)
-    ax_sh.set_ylim(-0.05, 0.85)
-    ax_sh.set_xlim(-1, 155)
-    ax_sh.set_ylabel(r"Estimated $\tau^*$")
-    ax_sh.set_xlabel("Item index")
-    ax_sh.legend(loc="upper right", framealpha=0.9, fontsize=8)
+    # ── Top row: simulation, one panel per model ─────────────────────────
+    def _sim_panel(idx, runs, color, tau, label, show_ylabel):
+        ax = fig.add_subplot(gs[0, idx])
+        ax.set_title(f"({chr(ord('a')+idx)}) Sim: {label}")
+        for i, run in enumerate(runs):
+            xs = np.arange(len(run["tau_at_item"]))
+            lbl = f"Simulated ($n={n_sim}$)" if i == 0 else None
+            ax.step(xs, run["tau_at_item"], where="post",
+                    color=color, alpha=0.35, linewidth=0.9, label=lbl)
+        ax.axhline(tau, color="#555555", linestyle=":", linewidth=1.0,
+                   label=rf"True $\tau^*={tau:.2f}$")
+        ax.axhline(0.5, color="#aaaaaa", linestyle="-", linewidth=0.5, alpha=0.4)
+        ax.set_ylim(-0.05, 0.85)
+        ax.set_xlim(-1, 155)
+        if show_ylabel: ax.set_ylabel(r"Estimated $\tau^*$")
+        else: plt.setp(ax.get_yticklabels(), visible=False)
+        ax.set_xlabel("Item index")
+        ax.legend(loc="upper right", framealpha=0.9, fontsize=7.5)
+        return ax
 
-    ax_sq = fig.add_subplot(gs[0, 1], sharey=ax_sh)
-    ax_sq.set_title("(b) Simulation: Qwen-like ($q{=}0.42, r{=}0.43$)")
-    for i, run in enumerate(sim_qwen):
-        xs = np.arange(len(run["tau_at_item"]))
-        label = f"Simulated runs ($n$={n_sim})" if i == 0 else None
-        ax_sq.step(xs, run["tau_at_item"], where="post",
-                   color=C_QWEN, alpha=0.35, linewidth=0.9, label=label)
-    ax_sq.axhline(TAU_TRUE_QWEN, color="#555555", linestyle=":", linewidth=1.0,
-                  label=r"True $\tau^* = 0.50$")
-    ax_sq.axhline(0.5, color="#aaaaaa", linestyle="-", linewidth=0.5, alpha=0.4)
-    ax_sq.set_xlim(-1, 155)
-    ax_sq.set_xlabel("Item index")
-    ax_sq.legend(loc="upper right", framealpha=0.9, fontsize=8)
-    plt.setp(ax_sq.get_yticklabels(), visible=False)
+    ax_a = _sim_panel(0, sim_haiku,  C_HAIKU,  TAU_TRUE_HAIKU,  r"Haiku ($q{=}0.23,r{=}0.08$)",  True)
+    ax_b = _sim_panel(1, sim_gemma,  C_GEMMA,  TAU_TRUE_GEMMA,  r"Gemma ($q{=}0.39,r{=}0.18$)",  False)
+    ax_c = _sim_panel(2, sim_sonnet, C_SONNET, TAU_TRUE_SONNET, r"Sonnet ($q{=}0.21,r{=}0.50$)", False)
+    ax_d = _sim_panel(3, sim_qwen,   C_QWEN,   TAU_TRUE_QWEN,   r"Qwen ($q{=}0.28,r{=}0.53$)",   False)
 
-    # ── Bottom row: Empirical ─────────────────────────────────────────────
-    ax_eh = fig.add_subplot(gs[1, 0], sharey=ax_sh)
-    ax_eh.set_title("(c) Empirical: Haiku 4.5 (50 items)")
-    plot_trajectories(ax_eh, haiku_50, C_HAIKU, TAU_TRUE_HAIKU,
-                      "Haiku", show_ylabel=True, show_136=haiku_136)
-    ax_eh.set_xlabel("Item index")
+    # ── Bottom row: empirical, one panel per model ──────────────────────
+    def _emp_panel(idx, runs, runs136, color, tau, label, show_ylabel):
+        ax = fig.add_subplot(gs[1, idx])
+        ax.set_title(f"({chr(ord('e')+idx)}) Empirical: {label}")
+        if runs:
+            plot_trajectories(ax, runs, color, tau, label, show_ylabel=show_ylabel,
+                              show_136=runs136 if runs136 else None)
+        else:
+            ax.text(0.5, 0.5, "(no data)", ha="center", va="center", transform=ax.transAxes)
+            ax.set_ylim(-0.05, 0.85)
+        ax.set_xlabel("Item index")
+        if not show_ylabel: plt.setp(ax.get_yticklabels(), visible=False)
 
-    ax_eq = fig.add_subplot(gs[1, 1], sharey=ax_sh)
-    ax_eq.set_title("(d) Empirical: Qwen3-8B (50 items)")
-    plot_trajectories(ax_eq, qwen_50, C_QWEN, TAU_TRUE_QWEN,
-                      "Qwen3-8B", show_ylabel=False, show_136=qwen_136)
-    ax_eq.set_xlabel("Item index")
-    plt.setp(ax_eq.get_yticklabels(), visible=False)
+    _emp_panel(0, haiku_50,  haiku_136, C_HAIKU,  TAU_TRUE_HAIKU,  "Haiku",      True)
+    _emp_panel(1, gemma_50,  None,      C_GEMMA,  TAU_TRUE_GEMMA,  "Gemma4-31B", False)
+    _emp_panel(2, sonnet_50, None,      C_SONNET, TAU_TRUE_SONNET, "Sonnet",     False)
+    _emp_panel(3, qwen_50,   qwen_136,  C_QWEN,   TAU_TRUE_QWEN,   "Qwen3-8B",   False)
 
     out_png = fig_dir / "adaptive_empirical.png"
     out_pdf = fig_dir / "adaptive_empirical.pdf"
@@ -285,18 +288,13 @@ def main():
     fig.savefig(out_pdf)
     print(f"Saved: {out_png}, {out_pdf}")
 
-    # ── Summary stats ─────────────────────────────────────────────────────
-    for label, runs in [("Haiku 50", haiku_50), ("Qwen 50", qwen_50)]:
-        if not runs:
-            continue
+    for label, runs in [("Haiku", haiku_50), ("Gemma4-31B", gemma_50),
+                        ("Sonnet", sonnet_50), ("Qwen3-8B", qwen_50)]:
+        if not runs: continue
         taus = [r["final"]["tau"] for r in runs]
         n_upd = [len(r["update_indices"]) for r in runs]
-        print(f"{label}: final τ* = {np.mean(taus):.3f} ± {np.std(taus):.3f}, "
-              f"updates/run = {np.mean(n_upd):.1f}")
-        for r in runs:
-            f = r["final"]
-            print(f"  tp_fixed={f['tp_fixed']}, tp_not={f['tp_not_fixed']}, "
-                  f"fp_reg={f['fp_regressed']}, fp_ok={f['fp_ok']} → τ*={f['tau']:.3f}")
+        print(f"{label:<11} final τ̂* = {np.mean(taus):.3f} ± {np.std(taus):.3f}, "
+              f"mean updates/run = {np.mean(n_upd):.1f}")
 
 
 if __name__ == "__main__":

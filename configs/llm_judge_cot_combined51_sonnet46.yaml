@@ -1,0 +1,17 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+
+analyzer:
+  name: "combined"
+  timeout: 30
+
+feedback:
+  condition: "llm_judge"
+
+agent:
+  model: "claude-sonnet-4-6"
+
+llm_judge:
+  model: "claude-haiku-4-5-20251001"
+  use_cot: true

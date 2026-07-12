@@ -11,9 +11,9 @@ feedback:
 
 agent:
   model: "qwen3:8b"
-  ollama_base_url: "http://localhost:11434"
+  ollama_base_url: "http://localhost:11435"
   temperature: 0.2
 
 llm_judge:
   model: "qwen3:8b"
-  ollama_base_url: "http://localhost:11434"
+  ollama_base_url: "http://localhost:11435"

@@ -17,13 +17,15 @@ class LLMJudgeAgent(CodeAgent):
         judge_llm: LLMClient,
         max_iterations: int = 5,
         feedback_format: str = "natural_language",
+        use_cot: bool = False,
     ):
         super().__init__(llm, analyzer, max_iterations, feedback_format)
         self.judge_llm = judge_llm
+        self.use_cot = use_cot
 
     @property
     def condition_name(self) -> str:
-        return "llm_judge"
+        return "llm_judge_cot" if self.use_cot else "llm_judge"
 
     def filter_findings(self, findings: list[Finding], code: str) -> list[Finding]:
-        return triage_findings(findings, code, self.judge_llm)
+        return triage_findings(findings, code, self.judge_llm, use_cot=self.use_cot)

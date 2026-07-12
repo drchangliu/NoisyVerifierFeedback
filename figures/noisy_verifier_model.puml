@@ -1,0 +1,32 @@
+@startuml
+skinparam backgroundColor white
+skinparam roundcorner 10
+skinparam defaultFontSize 12
+
+rectangle "**Iterate (max 5 rounds)**" as loop #f8f9fa {
+    rectangle "LLM Agent\ngenerates C_k" as A #d4edda
+    rectangle "Analyzers\nSemgrep + Bandit\nF = V(C_k)\n75 rules, 23 findings" as B #fff3cd
+    rectangle "Feedback Policy\nselect S ⊆ F\nwhere p̂_i ≥ τ" as C #cce5ff
+    rectangle "LLM Agent\nrevises → C_{k+1}" as D #d4edda
+
+    A -right-> B : code
+    B -right-> C : findings
+    C -right-> D : filtered\nfindings
+}
+D -up-> A : next iteration
+
+note bottom of loop
+  **Per-finding decision**: surface finding //i// only if p̂_i ≥ τ* = r/(q+r)
+end note
+
+rectangle "**True Positive** surfaced\nprob p_i: finding IS a vulnerability\nLLM fixes with prob q\nHaiku: q=0.26 | Qwen: q=0.42\n→ JointPass **improves**" as TP #d4edda
+rectangle "**False Positive** surfaced\nprob 1−p_i: finding is NOT a vulnerability\nLLM \"fix\" causes regression with prob r\nHaiku: r=0.00 | Qwen: r=0.43\n→ JointPass **degrades**" as FP #f8d7da
+
+C -down-> TP
+C -down-> FP
+
+note bottom
+  τ*_Haiku = 0/(0.26+0) = 0 (surface everything)
+  τ*_Qwen = 0.43/(0.42+0.43) = 0.50 (filter low-precision rules)
+end note
+@enduml

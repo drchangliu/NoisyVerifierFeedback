@@ -1,0 +1,27 @@
+Metadata-Version: 2.4
+Name: noisy-verifier-feedback
+Version: 0.1.0
+Summary: Selective Feedback for Noisy Verifiers in LLM Code Agents
+Requires-Python: >=3.11
+Requires-Dist: pydantic>=2.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: anthropic>=0.40
+Requires-Dist: openai>=1.50
+Requires-Dist: datasets>=2.19
+Requires-Dist: pandas>=2.2
+Requires-Dist: numpy>=1.26
+Requires-Dist: scipy>=1.13
+Requires-Dist: matplotlib>=3.9
+Requires-Dist: seaborn>=0.13
+Requires-Dist: tqdm>=4.66
+Requires-Dist: rich>=13.7
+Requires-Dist: tenacity>=8.3
+Provides-Extra: dev
+Requires-Dist: pytest>=8.2; extra == "dev"
+Requires-Dist: pytest-cov>=5.0; extra == "dev"
+Requires-Dist: ruff>=0.5; extra == "dev"
+Requires-Dist: mypy>=1.10; extra == "dev"
+Requires-Dist: ipykernel>=6.29; extra == "dev"
+Requires-Dist: semgrep; extra == "dev"
+Requires-Dist: bandit; extra == "dev"

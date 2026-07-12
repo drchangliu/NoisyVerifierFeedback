@@ -93,7 +93,8 @@ def build_agent(config: dict):
             temperature=0.0,
             ollama_base_url=judge_ollama_url,
         )
-        return LLMJudgeAgent(llm, analyzer, judge_llm, max_iter, fmt)
+        use_cot = bool(config.get("llm_judge", {}).get("use_cot", False))
+        return LLMJudgeAgent(llm, analyzer, judge_llm, max_iter, fmt, use_cot=use_cot)
     elif condition == "adaptive":
         from nvf.agents.adaptive import AdaptiveAgent
         precision_map = _load_precision_map(config)
@@ -110,8 +111,15 @@ def build_agent(config: dict):
 
 def _load_precision_map(config: dict) -> dict[str, float]:
     """Load precomputed per-rule precision map for selective condition."""
+    override = config.get("selective", {}).get("precision_map_path")
+    if override:
+        path = Path(override)
+        if path.exists():
+            data = json.loads(path.read_text())
+            console.print(f"[green]Loaded precision map (override): {path} ({len(data)} rules)[/green]")
+            return {k: v["precision"] for k, v in data.items()}
+        console.print(f"[red]precision_map_path set but file missing: {path}[/red]")
     analyzer_name = config["analyzer"]["name"]
-    # Try analyzer-specific map first, then fallback to default
     candidates = [
         Path(f"data/calibration/precision_map_{analyzer_name}.json"),
         Path("data/calibration/precision_map.json"),
@@ -130,6 +138,13 @@ def main():
     parser.add_argument("--config", required=True, help="Path to experiment config YAML")
     parser.add_argument("--dry-run", action="store_true", help="Print config and exit")
     parser.add_argument("--items", type=int, default=None, help="Limit number of benchmark items")
+    parser.add_argument(
+        "--shuffle-seed", type=int, default=None,
+        help="If set, shuffle the eval_items in-place with this seed before "
+             "the loop runs. Used for the adaptive item-ordering ablation: the "
+             "adaptive policy's posterior depends on what it sees early, so "
+             "varying the order tests robustness to ordering.",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -174,6 +189,13 @@ def main():
 
     if args.items:
         eval_items = eval_items[: args.items]
+
+    if args.shuffle_seed is not None:
+        import random
+        rng = random.Random(args.shuffle_seed)
+        eval_items = list(eval_items)
+        rng.shuffle(eval_items)
+        console.print(f"[bold]Item order shuffled with seed:[/bold] {args.shuffle_seed}")
 
     console.print(f"[bold]Eval items:[/bold] {len(eval_items)}")
 

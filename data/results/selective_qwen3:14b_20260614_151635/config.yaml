@@ -1,0 +1,28 @@
+agent:
+  max_iterations: 5
+  model: qwen3:14b
+  ollama_base_url: http://localhost:11435
+  temperature: 0.2
+analyzer:
+  config: auto
+  name: combined
+  timeout: 30
+benchmark:
+  calibration_fraction: 0.0
+  name: combined
+budget:
+  max_cost_usd: 100.0
+execution:
+  sandbox: subprocess
+  timeout: 10
+feedback:
+  condition: selective
+  format: natural_language
+llm_judge:
+  model: claude-haiku-4-5-20251001
+output:
+  dir: data/results
+  run_id: selective_qwen3:14b_20260614_151635
+seed: 42
+selective:
+  threshold_tau: 0.5

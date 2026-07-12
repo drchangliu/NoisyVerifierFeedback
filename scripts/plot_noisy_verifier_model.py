@@ -148,14 +148,14 @@ def main():
              "True Positive surfaced\n"
              "prob $p_i$: finding IS a vulnerability\n"
              "LLM fixes with prob $q$\n"
-             "Haiku: $q$=0.26  |  Qwen: $q$=0.42",
+             "Haiku: $q$=0.23  |  Qwen: $q$=0.28",
              green_bg, green_brd, fontsize=7.5)
 
     draw_box(fp_x, outcome_y, outcome_w, outcome_h,
              "False Positive surfaced\n"
              "prob $1-p_i$: finding is NOT a vulnerability\n"
              'LLM "fix" causes regression with prob $r$\n'
-             "Haiku: $r$=0.00  |  Qwen: $r$=0.43",
+             "Haiku: $r$=0.08  |  Qwen: $r$=0.53",
              red_bg, red_brd, fontsize=7.5)
 
     # ── JointPass labels (below outcome boxes) ───────────────────────────
@@ -170,9 +170,9 @@ def main():
     # ── Optimal threshold footer ──────────────────────────────────────────
     ax.text((x1 + x4) / 2, 0.35,
             "Optimal threshold:  "
-            "$\\tau^*_{\\mathrm{Haiku}} = 0/(0.26+0) = 0$ (surface everything)"
+            "$\\tau^*_{\\mathrm{Haiku}} = 0.08/(0.23+0.08) = 0.26$ (low threshold)"
             "      "
-            "$\\tau^*_{\\mathrm{Qwen}} = 0.43/(0.42+0.43) = 0.50$ "
+            "$\\tau^*_{\\mathrm{Qwen}} = 0.53/(0.28+0.53) = 0.66$ "
             "(filter low-precision rules)",
             ha="center", va="center", fontsize=8, color="#333333",
             bbox=dict(boxstyle="round,pad=0.3", facecolor="#e8eaf6",

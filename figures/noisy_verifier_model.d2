@@ -1,0 +1,93 @@
+direction: right
+
+loop: Iterate (max 5 rounds) {
+  style.fill: "#f8f9fa"
+  style.stroke: "#6c757d"
+
+  A {
+    label: |md
+      LLM Agent
+      generates C_k
+    |
+    style.fill: "#d4edda"
+    style.stroke: "#28a745"
+  }
+  B {
+    label: |md
+      Analyzers
+      Semgrep + Bandit
+      F = V(C_k)
+      75 rules, 23 findings
+    |
+    style.fill: "#fff3cd"
+    style.stroke: "#ffc107"
+  }
+  C {
+    label: |md
+      Feedback Policy
+      select S ⊆ F
+      where p̂_i ≥ τ
+    |
+    style.fill: "#cce5ff"
+    style.stroke: "#0d6efd"
+  }
+  D {
+    label: |md
+      LLM Agent
+      revises → C_(k+1)
+    |
+    style.fill: "#d4edda"
+    style.stroke: "#28a745"
+  }
+
+  A -> B: code
+  B -> C: findings
+  C -> D: filtered findings
+}
+loop.D -> loop.A: next iteration {
+  style.stroke-dash: 3
+}
+
+decision {
+  label: |md
+    **Per-finding decision:** surface finding *i* only if p̂_i ≥ τ* = r/(q+r)
+  |
+  style.fill: "#fff8e1"
+  style.stroke: "#ff9800"
+  style.font-size: 14
+  style.bold: true
+
+  TP {
+    label: |md
+      ✅ **True Positive** surfaced
+      prob p_i: finding IS a vulnerability
+      LLM fixes with prob q
+      Haiku: q=0.23, Qwen: q=0.28
+      → JointPass **improves**
+    |
+    style.fill: "#d4edda"
+    style.stroke: "#28a745"
+  }
+  FP {
+    label: |md
+      ❌ **False Positive** surfaced
+      prob 1−p_i: NOT a vulnerability
+      LLM "fix" causes regression with prob r
+      Haiku: r=0.08, Qwen: r=0.53
+      → JointPass **degrades**
+    |
+    style.fill: "#f8d7da"
+    style.stroke: "#dc3545"
+  }
+}
+
+loop.C -> decision
+
+footer {
+  label: |md
+    τ*_Haiku = 0.08/(0.23+0.08) = 0.26 (low threshold)
+    τ*_Qwen = 0.53/(0.28+0.53) = 0.66 (filter low-precision rules)
+  |
+  style.fill: "#e8eaf6"
+  style.stroke: "#5c6bc0"
+}

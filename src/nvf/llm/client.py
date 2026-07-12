@@ -15,6 +15,7 @@ class LLMResponse:
     output_tokens: int = 0
     cost_usd: float = 0.0
     model: str = ""
+    stop_reason: str = ""  # provider's stop/done reason; "length"/"max_tokens" = truncated
 
 
 class LLMClient:
@@ -34,9 +35,11 @@ class LLMClient:
         model: str = "claude-sonnet-4-20250514",
         temperature: float = 0.2,
         ollama_base_url: str | None = None,
+        max_tokens: int = 4096,
     ):
         self.model = model
         self.temperature = temperature
+        self.max_tokens = max_tokens
 
         if ollama_base_url:
             self._provider = "ollama"
@@ -65,7 +68,7 @@ class LLMClient:
             else:
                 user_messages.append(m)
 
-        kwargs = {"model": self.model, "max_tokens": 4096, "messages": user_messages}
+        kwargs = {"model": self.model, "max_tokens": self.max_tokens, "messages": user_messages}
         if system:
             kwargs["system"] = system
         if self.temperature is not None:
@@ -83,13 +86,14 @@ class LLMClient:
             output_tokens=output_tokens,
             cost_usd=cost,
             model=self.model,
+            stop_reason=response.stop_reason or "",
         )
 
     def _generate_openai(self, messages: list[dict]) -> LLMResponse:
         response = self._openai.chat.completions.create(
             model=self.model,
             messages=messages,
-            max_tokens=4096,
+            max_tokens=self.max_tokens,
             temperature=self.temperature,
         )
 
@@ -103,6 +107,7 @@ class LLMClient:
             output_tokens=output_tokens,
             cost_usd=cost,
             model=self.model,
+            stop_reason=response.choices[0].finish_reason or "",
         )
 
     def _generate_ollama(self, messages: list[dict]) -> LLMResponse:
@@ -112,7 +117,7 @@ class LLMClient:
             "stream": False,
             "options": {
                 "temperature": self.temperature,
-                "num_predict": 4096,
+                "num_predict": self.max_tokens,
             },
         }
 
@@ -134,6 +139,7 @@ class LLMClient:
             output_tokens=eval_count,
             cost_usd=0.0,  # Local models are free
             model=self.model,
+            stop_reason=data.get("done_reason", "") or "",
         )
 
     def _compute_cost(self, input_tokens: int, output_tokens: int) -> float:

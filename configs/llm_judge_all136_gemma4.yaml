@@ -1,0 +1,16 @@
+benchmark:
+  name: "combined_all"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "llm_judge"
+agent:
+  model: "gemma4:31b"
+  ollama_base_url: "http://localhost:11436"
+  temperature: 0.2
+selective:
+  threshold_tau: 0.5
+llm_judge:
+  model: "claude-haiku-4-5-20251001"

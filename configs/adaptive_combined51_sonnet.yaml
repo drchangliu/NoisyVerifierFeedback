@@ -1,0 +1,13 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "adaptive"
+agent:
+  model: "claude-sonnet-4-20250514"
+  temperature: 0.2
+adaptive:
+  prior_strength: 1.0

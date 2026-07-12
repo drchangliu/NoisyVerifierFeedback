@@ -1,155 +1,85 @@
-# Selective Feedback for Noisy Verifiers in LLM Code Agents
+# Replication Package: Selective Feedback for Noisy Verifiers in LLM Code Agents
 
-Code and data for the paper:
+Replication package for the manuscript *"Selective Feedback for Noisy Verifiers
+in LLM Code Agents: When Static Analyzers Mislead Language Models"* (Chang Liu,
+Ohio University; under review at *Empirical Software Engineering*, submitted
+July 2026).
 
-> **Selective Feedback for Noisy Verifiers in LLM Code Agents: When Static Analyzers Mislead Language Models**
->
-> Chang Liu et al. — *Submitted to Empirical Software Engineering (EMSE), 2026*
+The paper derives the optimal precision threshold τ\* = r/(q+r) for surfacing
+noisy static-analyzer findings to an LLM code agent, and shows empirically —
+across 15 distinct models from six developers — that the counterfactual
+regression rate *r* falls with model capability while the fix rate *q* stays
+flat, so fixed feedback policies do not transfer across model snapshots.
 
-## Overview
+## Contents
 
-LLM code agents use static analyzers (Semgrep, Bandit) in feedback loops to fix security vulnerabilities. But these analyzers are **noisy**: combined precision is only 23.8%. Surfacing false positives causes regressions — the LLM "fixes" nonexistent issues and breaks working code.
+| Path | Contents |
+|---|---|
+| `src/nvf/` | The feedback-loop framework: agents (naive/selective/LLM-judge/adaptive), analyzer integration (Semgrep + Bandit), calibration, unified LLM client |
+| `scripts/` | Every experiment and analysis script; each result in the paper maps to one script (table below) |
+| `configs/` | Exact run configurations for all reported experiments |
+| `data/calibration/` | Per-rule precision calibration data (151 findings, 75 rules) |
+| `data/results/` | Raw traces for all 790 experiment runs (`traces.jsonl` + `config.yaml` per run) — the paper's primary data |
+| `data/humaneval/` | HumanEval pass@1 records for the external capability axis (per-model JSONL) |
+| `data/raw/` | Benchmark items (CWEval, SecurityEval incl. our hand-authored oracles, SecCodePLT) |
+| `figures/` | All paper figures as generated |
+| `tests/` | Unit and integration tests (`make test`, `make test-integration`) |
 
-We formalize this as the **noisy-verifier problem** and study four feedback policies:
-
-| Policy | Description |
-|--------|-------------|
-| **Naive** | Surface all findings (status quo) |
-| **Selective** | Filter by per-rule precision threshold |
-| **LLM-Judge** | Cheap model triages findings |
-| **Adaptive** | Online Bayesian learning of optimal threshold |
-
-Key finding: naive feedback **harms** mid-tier models (Qwen3-8B: -2.5pp) while the adaptive policy **outperforms all fixed policies** (+4.1pp for Haiku, +11.6pp for Qwen3-8B).
-
-## Quick Start
+## Setup
 
 ```bash
-# Setup
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
-pip install pycryptodome cryptography lxml defusedxml pyjwt flask
-
-# Configure API key (for Haiku/Sonnet experiments)
-cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY
-
-# Run calibration (no API key needed, ~15 min)
-python scripts/run_calibration.py --benchmark both --use-full-dataset --analyzer combined
-
-# Run a small live test (requires API key)
-python scripts/live_test.py --model claude-haiku-4-5-20251001 --items 3
-
-# Run full experiment (51 items, ~$0.05 per run)
-python scripts/run_experiment.py --config configs/naive_combined51_haiku.yaml
+pip install pycryptodome cryptography lxml defusedxml pyjwt flask  # CWEval test deps
+cp .env.example .env   # add ANTHROPIC_API_KEY only if re-running API models
 ```
 
-## Reproducing Key Results
+Analysis scripts below run **entirely from the released traces** — no API key
+or GPU needed to reproduce every number and figure in the paper.
 
-### Core experiments (51 items, multi-seed)
+## Reproducing the paper's results
 
-```bash
-# Naive baseline
-python scripts/run_experiment.py --config configs/naive_combined51_haiku.yaml
+| Paper result | Command |
+|---|---|
+| R3/R4/R5 — the r-law, q-flatness, proxy robustness, Table 7 (q, r, τ\*) | `python scripts/r_capability.py --collapse-eras` (add `--figure figures/r_vs_capability.png`) |
+| R5 external axis — HumanEval vs r (Fig. 5) | `python scripts/humaneval_correlation.py --figure figures/r_vs_humaneval.png` |
+| R6/R7 — τ\* sign prediction, regret, baselines, bootstrap CIs (Tables 5–6, Fig. 6) | `python scripts/tau_star_prediction.py --collapse-eras --naive-only` |
+| R6 sensitivity (dropping the Sonnet pair) | `python scripts/tau_star_prediction.py --collapse-eras --naive-only --drop sonnet4,sonnet46` |
+| Estimator comparison (pooled vs naive-only; Sec. 6.1) | run the above with and without `--naive-only` |
+| Per-policy tables, CIs (Tables 4, 8–10) | `python scripts/aggregate_seeds.py`, `python scripts/aggregate_v2.py` |
+| Significance tests (Table 11) | `python scripts/compute_significance.py` |
+| q/r canonical labeling (Sec. 6.1) | `python scripts/compute_qr.py` |
+| Per-rule precision calibration (Sec. 4.5, Appendix) | `python scripts/run_calibration.py --benchmark both --use-full-dataset` |
+| Held-out calibration (Sec. 8.2, Appendix) | `python scripts/run_heldout_calibration.py`, `python scripts/compare_calibrations.py` |
+| Adaptive-policy convergence (Fig. 8) | `python scripts/plot_adaptive_empirical.py` |
+| HumanEval measurement (re-collection; needs models) | `python scripts/run_humaneval.py` |
+| New feedback-loop runs (needs models) | `python scripts/run_experiment.py --config configs/<name>.yaml` |
 
-# Selective (tau=0.5)
-python scripts/run_experiment.py --config configs/selective_combined51_haiku.yaml
+Batch-drift note (Sec. 6.2 of the paper): all headline policy gaps are
+computed from within-run ΔJP; when comparing across runs, match collection
+batches or difference against each run's iteration-0 baseline.
 
-# Adaptive threshold
-python scripts/run_experiment.py --config configs/adaptive_combined51_haiku.yaml
+### Model availability caveat
 
-# LLM Judge
-python scripts/run_experiment.py --config configs/llm_judge_combined51_haiku.yaml
-```
+Two of the 15 evaluated models were retired by their providers during the
+study (Claude Sonnet 4 on the Anthropic API; GLM-4.6 on Ollama Cloud), so
+their cells cannot be re-collected — analysis of their released traces remains
+fully reproducible. This is, itself, an instance of the paper's premise.
 
-For Qwen3-8B (free, requires [Ollama](https://ollama.ai)):
-```bash
-ollama pull qwen3:8b
-python scripts/run_experiment.py --config configs/naive_combined51_qwen3.yaml
-python scripts/run_experiment.py --config configs/selective_combined51_qwen3.yaml
-python scripts/run_experiment.py --config configs/adaptive_combined51_qwen3.yaml
-```
+## License
 
-### Multi-seed runs
-
-```bash
-python scripts/run_multi_seed.py --config configs/naive_combined51_haiku.yaml --seeds 8
-```
-
-### Threshold sweep
-
-```bash
-for tau in 0.1 0.3 0.5 0.7 0.9; do
-  python scripts/run_experiment.py \
-    --config configs/selective_combined51_haiku_tau${tau}.yaml
-done
-```
-
-### Analyze results and generate figures
-
-```bash
-python scripts/analyze_results.py data/results/*
-python scripts/generate_figures.py data/results/* --output-dir figures/
-python scripts/plot_adaptive_empirical.py
-```
-
-## Project Structure
-
-```
-NoisyVerifierFeedback/
-├── src/nvf/                    # Core library
-│   ├── agents/                 # Feedback policies (naive, selective, llm_judge, adaptive)
-│   ├── analyzers/              # Semgrep + Bandit wrappers
-│   ├── benchmark/              # CWEval, SecurityEval, SecCodePLT loaders
-│   ├── calibration/            # Per-rule precision estimation
-│   ├── execution/              # Test runner + sandbox
-│   ├── feedback/               # Finding filter + formatter
-│   ├── llm/                    # LLM client + cost tracker
-│   ├── metrics/                # JointPass@k computation
-│   └── theory/                 # Optimal threshold + adaptive policy
-├── configs/                    # Experiment configurations (YAML)
-├── scripts/                    # Experiment runners + analysis
-├── data/
-│   ├── calibration/            # Pre-computed precision maps
-│   └── results/                # Experiment traces (168 runs)
-├── figures/                    # Publication figures
-└── tests/                      # Unit tests
-```
-
-## Pre-computed Results
-
-The `data/results/` directory contains traces from all 168 experiment runs reported in the paper. Each run directory contains:
-- `config.yaml` — resolved experiment configuration
-- `traces.jsonl` — per-item iteration traces with findings, code, and test results
-
-The `data/calibration/` directory contains:
-- `precision_map_combined.json` — per-rule precision estimates (75 rules)
-- `precision_map.json` — Semgrep-only precision (41 rules)
-- `labeled_findings.jsonl` — ground-truth labels for 146 calibration items
-
-## Requirements
-
-- Python 3.11+
-- Semgrep (`pip install semgrep`)
-- Bandit (`pip install bandit`)
-- For local models: [Ollama](https://ollama.ai) with 8+ GB VRAM (Qwen3-8B) or 24+ GB (Gemma4-31B)
-- For API models: Anthropic API key (~$0.05 per 51-item run with Haiku)
-
-## Cost
-
-A complete reproduction of core experiments (51 items, 4 policies, 2 API models, 4 seeds) costs **~$3** in API fees. Local model experiments are free. The full extended benchmark (136 items) costs ~$5 additional.
+Code and original data: MIT (see `LICENSE`). Redistributed benchmark items
+under `data/raw/` remain under their upstream licenses (CWEval, SecurityEval,
+SecCodePLT).
 
 ## Citation
 
 ```bibtex
-@article{liu2026noisy,
-  title={Selective Feedback for Noisy Verifiers in {LLM} Code Agents: When Static Analyzers Mislead Language Models},
-  author={Liu, Chang},
-  journal={Empirical Software Engineering},
-  year={2026},
-  note={Under review}
+@article{liu2026noisyverifier,
+  author = {Liu, Chang},
+  title  = {Selective Feedback for Noisy Verifiers in LLM Code Agents:
+            When Static Analyzers Mislead Language Models},
+  note   = {Under review at Empirical Software Engineering},
+  year   = {2026}
 }
 ```
-
-## License
-
-MIT
