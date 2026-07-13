@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Trust Leaderboard &mdash; Noisy Verifier Feedback</title>
+<style>
+  :root { --ink:#1a1a19; --ink2:#5f5e56; --line:#e4e3dd; --bg:#fdfdfc; }
+  * { box-sizing:border-box; margin:0; }
+  body { font:16px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,
+         sans-serif; color:var(--ink); background:var(--bg);
+         padding:2.5rem 1rem 4rem; }
+  main { max-width:1000px; margin:0 auto; }
+  h1 { font-size:1.7rem; line-height:1.25; letter-spacing:-0.01em; }
+  .sub { color:var(--ink2); margin:0.6rem 0 1.6rem; max-width:46em; }
+  .figure { margin:1.6rem 0; }
+  .figure img { max-width:100%; height:auto; border:1px solid var(--line);
+                 border-radius:8px; }
+  .tablewrap { overflow-x:auto; margin:1.6rem 0 0.8rem; }
+  table { border-collapse:collapse; width:100%; font-size:0.92rem;
+           white-space:nowrap; }
+  th { text-align:left; font-weight:600; color:var(--ink2);
+        border-bottom:2px solid var(--ink); padding:0.45rem 0.7rem;
+        font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; }
+  td { padding:0.5rem 0.7rem; border-bottom:1px solid var(--line); }
+  td.rank { color:var(--ink2); }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  td.model { font-weight:600; }
+  .dot { display:inline-block; width:0.65em; height:0.65em;
+          border-radius:50%; margin-right:0.5em; }
+  .ci { color:var(--ink2); font-size:0.85em; }
+  .note { color:var(--ink2); font-weight:400; font-size:0.82em;
+           margin-left:0.6em; }
+  .chip { font-size:0.78rem; padding:0.1rem 0.55rem; border-radius:99px;
+           border:1px solid var(--line); }
+  .chip.naive { background:#eef7f2; }
+  .chip.selective { background:#fdf3e2; }
+  .how { color:var(--ink2); font-size:0.92rem; max-width:52em;
+          margin-top:1.4rem; }
+  .how b { color:var(--ink); }
+  .how p { margin:0.5rem 0; }
+  a { color:#2a78d6; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  footer { margin-top:2rem; color:var(--ink2); font-size:0.85rem; }
+</style></head><body><main>
+<h1>Which LLMs can you trust with unfiltered static-analyzer feedback?</h1>
+<p class="sub">A live trust leaderboard of 16 models, ranked by the
+<b>counterfactual regression rate r</b>: the probability that the model,
+handed a <em>false-alarm</em> security finding about its own working code,
+&ldquo;fixes&rdquo; the non-problem and breaks the code. Lower is better
+&mdash; a low-r model recognizes false alarms instead of obeying them.</p>
+
+<div class="figure"><img src="r_vs_capability.png"
+  alt="Scatter plot: regression rate r falls as model capability rises
+       across 16 models (rank correlation -0.89)"></div>
+
+<div class="tablewrap"><table>
+<thead><tr><th>#</th><th>Model</th><th>Developer</th>
+<th class="num">r (95% CI)</th><th class="num">q</th>
+<th class="num">&tau;*</th><th>Best fixed policy</th>
+<th class="num">JP@0</th><th class="num">HumanEval</th>
+<th class="num">FP/TP trials</th></tr></thead>
+<tbody><tr><td class='rank'>1</td><td class='model'><span class="dot" style="background:#1baf7a"></span>Claude Opus 4.8</td><td>Anthropic</td><td class='num'><b>0.16</b> <span class='ci'>[0.09, 0.27]</span></td><td class='num'>0.28</td><td class='num'>0.36</td><td><span class="chip naive">naive</span></td><td class='num'>62.5%</td><td class='num'>99.4%</td><td class='num'>57/36</td></tr><tr><td class='rank'>2</td><td class='model'><span class="dot" style="background:#2a78d6"></span>Qwen3.5-27B</td><td>Alibaba</td><td class='num'><b>0.17</b> <span class='ci'>[0.09, 0.31]</span></td><td class='num'>0.35</td><td class='num'>0.33</td><td><span class="chip naive">naive</span></td><td class='num'>55.5%</td><td class='num'>96.3%</td><td class='num'>46/37</td></tr><tr><td class='rank'>3</td><td class='model'><span class="dot" style="background:#1baf7a"></span>Claude Sonnet 4.6<span class='note'>in-sample</span></td><td>Anthropic</td><td class='num'><b>0.19</b> <span class='ci'>[0.16, 0.23]</span></td><td class='num'>0.45</td><td class='num'>0.30</td><td><span class="chip naive">naive</span></td><td class='num'>56.5%</td><td class='num'>98.8%</td><td class='num'>420/679</td></tr><tr><td class='rank'>4</td><td class='model'><span class="dot" style="background:#eda100"></span>Gemma4-31B<span class='note'>in-sample</span></td><td>Google</td><td class='num'><b>0.19</b> <span class='ci'>[0.15, 0.24]</span></td><td class='num'>0.38</td><td class='num'>0.33</td><td><span class="chip naive">naive</span></td><td class='num'>55.4%</td><td class='num'>100.0%</td><td class='num'>321/341</td></tr><tr><td class='rank'>5</td><td class='model'><span class="dot" style="background:#1baf7a"></span>Claude Haiku 4.5<span class='note'>in-sample</span></td><td>Anthropic</td><td class='num'><b>0.22</b> <span class='ci'>[0.18, 0.26]</span></td><td class='num'>0.33</td><td class='num'>0.40</td><td><span class="chip naive">naive</span></td><td class='num'>46.8%</td><td class='num'>96.3%</td><td class='num'>460/675</td></tr><tr><td class='rank'>6</td><td class='model'><span class="dot" style="background:#2a78d6"></span>Qwen3-coder-480B</td><td>Alibaba</td><td class='num'><b>0.28</b> <span class='ci'>[0.19, 0.41]</span></td><td class='num'>0.43</td><td class='num'>0.40</td><td><span class="chip naive">naive</span></td><td class='num'>44.1%</td><td class='num'>96.3%</td><td class='num'>60/95</td></tr><tr><td class='rank'>7</td><td class='model'><span class="dot" style="background:#008300"></span>DeepSeek-V4-flash</td><td>DeepSeek</td><td class='num'><b>0.28</b> <span class='ci'>[0.19, 0.40]</span></td><td class='num'>0.62</td><td class='num'>0.31</td><td><span class="chip naive">naive</span></td><td class='num'>47.9%</td><td class='num'>97.0%</td><td class='num'>67/103</td></tr><tr><td class='rank'>8</td><td class='model'><span class="dot" style="background:#2a78d6"></span>Qwen3-32B</td><td>Alibaba</td><td class='num'><b>0.29</b> <span class='ci'>[0.21, 0.39]</span></td><td class='num'>0.62</td><td class='num'>0.32</td><td><span class="chip naive">naive</span></td><td class='num'>34.8%</td><td class='num'>97.6%</td><td class='num'>100/192</td></tr><tr><td class='rank'>9</td><td class='model'><span class="dot" style="background:#e34948"></span>GLM-4.6<span class='note'>retired by provider</span></td><td>Zhipu</td><td class='num'><b>0.29</b> <span class='ci'>[0.20, 0.41]</span></td><td class='num'>0.53</td><td class='num'>0.36</td><td><span class="chip naive">naive</span></td><td class='num'>53.4%</td><td class='num'>&mdash;</td><td class='num'>72/51</td></tr><tr><td class='rank'>10</td><td class='model'><span class="dot" style="background:#4a3aa7"></span>Llama3.1-8B</td><td>Meta</td><td class='num'><b>0.37</b> <span class='ci'>[0.22, 0.56]</span></td><td class='num'>0.41</td><td class='num'>0.47</td><td><span class="chip naive">naive</span></td><td class='num'>31.5%</td><td class='num'>59.1%</td><td class='num'>27/95</td></tr><tr><td class='rank'>11</td><td class='model'><span class="dot" style="background:#1baf7a"></span>Claude Sonnet 4<span class='note'>in-sample, retired by provider</span></td><td>Anthropic</td><td class='num'><b>0.41</b> <span class='ci'>[0.34, 0.48]</span></td><td class='num'>0.23</td><td class='num'>0.64</td><td><span class="chip selective">selective</span></td><td class='num'>41.8%</td><td class='num'>&mdash;</td><td class='num'>196/177</td></tr><tr><td class='rank'>12</td><td class='model'><span class="dot" style="background:#2a78d6"></span>Qwen3-14B</td><td>Alibaba</td><td class='num'><b>0.43</b> <span class='ci'>[0.34, 0.52]</span></td><td class='num'>0.57</td><td class='num'>0.43</td><td><span class="chip naive">naive</span></td><td class='num'>35.4%</td><td class='num'>96.3%</td><td class='num'>116/212</td></tr><tr><td class='rank'>13</td><td class='model'><span class="dot" style="background:#2a78d6"></span>Qwen3.6-27B</td><td>Alibaba</td><td class='num'><b>0.48</b> <span class='ci'>[0.32, 0.65]</span></td><td class='num'>0.50</td><td class='num'>0.49</td><td><span class="chip naive">naive</span></td><td class='num'>36.0%</td><td class='num'>98.8%</td><td class='num'>31/42</td></tr><tr><td class='rank'>14</td><td class='model'><span class="dot" style="background:#2a78d6"></span>Qwen3-8B<span class='note'>in-sample</span></td><td>Alibaba</td><td class='num'><b>0.57</b> <span class='ci'>[0.50, 0.64]</span></td><td class='num'>0.45</td><td class='num'>0.56</td><td><span class="chip selective">selective</span></td><td class='num'>33.5%</td><td class='num'>93.9%</td><td class='num'>212/397</td></tr><tr><td class='rank'>15</td><td class='model'><span class="dot" style="background:#008300"></span>DeepSeek-V2-16B</td><td>DeepSeek</td><td class='num'><b>0.57</b> <span class='ci'>[0.33, 0.79]</span></td><td class='num'>0.35</td><td class='num'>0.62</td><td><span class="chip selective">selective</span></td><td class='num'>13.4%</td><td class='num'>42.1%</td><td class='num'>14/57</td></tr><tr><td class='rank'>16</td><td class='model'><span class="dot" style="background:#eda100"></span>Gemma3-27B</td><td>Google</td><td class='num'><b>0.72</b> <span class='ci'>[0.55, 0.84]</span></td><td class='num'>0.35</td><td class='num'>0.67</td><td><span class="chip selective">selective</span></td><td class='num'>29.2%</td><td class='num'>87.8%</td><td class='num'>32/97</td></tr></tbody></table></div>
+
+<div class="how">
+<p><b>r</b> &mdash; share of false-positive findings whose &ldquo;fix&rdquo;
+broke working code. <b>q</b> &mdash; share of true positives actually fixed
+(secure <em>and</em> tests still pass). <b>&tau;* = r/(q+r)</b> &mdash; feed
+the model a finding only if the rule&rsquo;s historical precision exceeds
+this threshold. <b>Best fixed policy</b> &mdash; the better of the two
+deployed fixed policies, <em>naive</em> (surface everything) vs
+<em>selective</em> (only rules with &gt;50% precision); &ldquo;naive&rdquo;
+does not mean surfacing everything is optimal &mdash; the optimum filters at
+the model&rsquo;s own &tau;*. <b>JP@0</b> &mdash; baseline JointPass
+(functionally correct <em>and</em> vulnerability-free) on the 51-item core
+benchmark. Combined Semgrep+Bandit analyzer, multi-seed; <em>in-sample</em>
+marks the five models used to formulate the r-law, all others measured
+prospectively.</p>
+<p>The headline: r falls steeply with capability (Spearman &minus;0.89) while
+q stays flat &mdash; <b>better models are less gullible</b> &mdash; so the
+right feedback policy is a property of the model and expires with every model
+update. One frontier model (Claude Fable&nbsp;5) could not be measured at
+all: its safety layer refused 9/10 benchmark requests.</p>
+</div>
+
+<footer>Updated 2026-07-12 &middot;
+<a href="https://github.com/drchangliu/NoisyVerifierFeedback">code, raw
+traces &amp; methodology</a> &middot; paper: <em>Selective Feedback for Noisy
+Verifiers in LLM Code Agents</em> (under review at Empirical Software
+Engineering; submitted state:
+<a href="https://github.com/drchangliu/NoisyVerifierFeedback/releases/tag/emse-2026-07">
+tag emse-2026-07</a>) &middot; Chang Liu, Ohio University</footer>
+</main></body></html>
