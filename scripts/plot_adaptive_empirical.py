@@ -108,7 +108,13 @@ def reconstruct_tau_trajectory(traces_path: Path) -> dict:
 
 
 def collect_runs(results_dir: Path, model_prefix: str, n_items: int = 50):
-    """Collect all adaptive runs for a given model and item count."""
+    """Collect all valid adaptive runs for a given model and item count.
+
+    Runs where the analyzer returned zero findings on every item are excluded:
+    they are mechanically broken (the 2026-05-28/30 analyzer-PATH failure
+    documented in the paper's R2/batch-drift discussion), the loop never
+    engages, and their flat tau=0.5 trajectories would bias the panel.
+    """
     runs = []
     for d in sorted(results_dir.iterdir()):
         if not d.name.startswith(f"adaptive_{model_prefix}"):
@@ -116,6 +122,10 @@ def collect_runs(results_dir: Path, model_prefix: str, n_items: int = 50):
         traces = d / "traces.jsonl"
         if not traces.exists():
             continue
+        recs = [json.loads(l) for l in traces.read_text().splitlines() if l.strip()]
+        recs = [t for t in recs if t.get("iterations")]
+        if recs and all(t["iterations"][0].get("n_findings", 0) == 0 for t in recs):
+            continue  # mechanically broken zero-finding run
         traj = reconstruct_tau_trajectory(traces)
         if len(traj["tau_at_item"]) == n_items:
             runs.append(traj)
@@ -187,13 +197,13 @@ def plot_trajectories(ax, runs, color, tau_true, model_label,
                        color=color, s=20, zorder=5, edgecolors="white",
                        linewidths=0.4, label=label_pt)
 
-    # 136-item run
+    # 136-item run (one legend entry for all such runs)
     if show_136:
-        for run in show_136:
+        for j, run in enumerate(show_136):
             xs = np.arange(len(run["tau_at_item"]))
             ax.step(xs, run["tau_at_item"], where="post",
                     color=color, alpha=0.25, linewidth=0.9, linestyle="--",
-                    label="136-item run")
+                    label=f"136-item runs ($n$={len(show_136)})" if j == 0 else None)
             if run["update_indices"]:
                 ax.scatter(run["update_indices"], run["tau_after_update"],
                            color=color, s=15, zorder=5, alpha=0.4,
@@ -207,7 +217,9 @@ def plot_trajectories(ax, runs, color, tau_true, model_label,
     ax.set_xlim(-1, max(len(runs[0]["tau_at_item"]), 55) if runs else 55)
     if show_ylabel:
         ax.set_ylabel(r"Estimated $\tau^*$")
-    ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
+    # Trajectories live in the 0.3-0.6 band, so the bottom of the axis is
+    # reliably empty; upper corners are not (dashed 136-item runs, tau* line).
+    ax.legend(loc="lower right", framealpha=0.9, fontsize=8)
 
 
 def main():
