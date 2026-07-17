@@ -148,8 +148,8 @@ Across these models, r falls steeply as capability rises (Spearman −0.89) —
 **better models are less gullible** — while q stays flat. So the optimal
 feedback policy is a property of the *model*, slides from "filter
 aggressively" toward "surface everything" as models improve, and expires with
-every model update. Full study: *Selective Feedback for Noisy Verifiers in LLM
-Code Agents* (under review at Empirical Software Engineering; the submitted
+every model update. Full study: *Better Models Are Less Gullible: Selective Feedback
+for LLM Code Agents under Noisy Static Analysis* (under review at Empirical Software Engineering; the submitted
 state is preserved as tag
 [`emse-2026-07`](../../releases/tag/emse-2026-07)).
 
@@ -309,8 +309,8 @@ all: its safety layer refused 9/10 benchmark requests.</p>
 
 <footer>Updated {today} &middot;
 <a href="https://github.com/drchangliu/NoisyVerifierFeedback">code, raw
-traces &amp; methodology</a> &middot; paper: <em>Selective Feedback for Noisy
-Verifiers in LLM Code Agents</em> (under review at Empirical Software
+traces &amp; methodology</a> &middot; paper: <em>Better Models Are Less Gullible:
+Selective Feedback for LLM Code Agents under Noisy Static Analysis</em> (under review at Empirical Software
 Engineering; submitted state:
 <a href="https://github.com/drchangliu/NoisyVerifierFeedback/releases/tag/emse-2026-07">
 tag emse-2026-07</a>) &middot; Chang Liu, Ohio University</footer>

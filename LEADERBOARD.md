@@ -1,6 +1,6 @@
 # Trust Leaderboard: which models can safely consume unfiltered static-analyzer feedback?
 
-*Updated 2026-07-12 · 16 models · ranked by the **counterfactual regression rate r** (lower = better): the probability that the model, handed a **false-positive** security finding on its own working code, "fixes" it and breaks the code.*
+*Updated 2026-07-17 · 16 models · ranked by the **counterfactual regression rate r** (lower = better): the probability that the model, handed a **false-positive** security finding on its own working code, "fixes" it and breaks the code.*
 
 ![r falls with capability](docs/r_vs_capability.png)
 
@@ -53,8 +53,8 @@ Across these models, r falls steeply as capability rises (Spearman −0.89) —
 **better models are less gullible** — while q stays flat. So the optimal
 feedback policy is a property of the *model*, slides from "filter
 aggressively" toward "surface everything" as models improve, and expires with
-every model update. Full study: *Selective Feedback for Noisy Verifiers in LLM
-Code Agents* (under review at Empirical Software Engineering; the submitted
+every model update. Full study: *Better Models Are Less Gullible: Selective Feedback
+for LLM Code Agents under Noisy Static Analysis* (under review at Empirical Software Engineering; the submitted
 state is preserved as tag
 [`emse-2026-07`](../../releases/tag/emse-2026-07)).
 

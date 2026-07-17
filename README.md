@@ -11,8 +11,8 @@ not transfer across model snapshots.
 
 This repository is **live**: numbers are refreshed as new model cohorts are
 measured and the benchmark expands over time. The first full study is described
-in the manuscript *"Selective Feedback for Noisy Verifiers in LLM Code Agents:
-When Static Analyzers Mislead Language Models"* (under review at *Empirical
+in the manuscript *"Better Models Are Less Gullible: Selective Feedback for LLM Code
+Agents under Noisy Static Analysis"* (under review at *Empirical
 Software Engineering*, submitted July 2026); the exact repository state that
 paper reports on is preserved as the git tag
 [`emse-2026-07`](../../releases/tag/emse-2026-07), so the paper's numbers stay
@@ -21,7 +21,7 @@ reproducible while the main branch moves on.
 ## Trust leaderboard
 
 <!-- LEADERBOARD:START -->
-*Ranked by the regression rate **r** — the probability the model breaks working code when handed a false-alarm security finding (lower = harder to mislead). Updated 2026-07-12. Full table, CIs, and methodology: [LEADERBOARD.md](LEADERBOARD.md) · [web version](https://drchangliu.github.io/NoisyVerifierFeedback/).*
+*Ranked by the regression rate **r** — the probability the model breaks working code when handed a false-alarm security finding (lower = harder to mislead). Updated 2026-07-17. Full table, CIs, and methodology: [LEADERBOARD.md](LEADERBOARD.md) · [web version](https://drchangliu.github.io/NoisyVerifierFeedback/).*
 
 ![Regression rate r falls as model capability rises (16 models, rank correlation -0.89)](docs/r_vs_capability.png)
 
@@ -117,8 +117,8 @@ SecCodePLT).
 ```bibtex
 @article{liu2026noisyverifier,
   author = {Liu, Chang},
-  title  = {Selective Feedback for Noisy Verifiers in LLM Code Agents:
-            When Static Analyzers Mislead Language Models},
+  title  = {Better Models Are Less Gullible: Selective Feedback for
+            LLM Code Agents under Noisy Static Analysis},
   note   = {Under review at Empirical Software Engineering},
   year   = {2026}
 }
