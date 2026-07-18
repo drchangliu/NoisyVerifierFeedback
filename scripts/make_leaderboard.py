@@ -53,12 +53,21 @@ DISPLAY = {
     "deepseek-v4-flash(cloud)": "DeepSeek-V4-flash",
     "glm-4.6(cloud)": "GLM-4.6",
 }
+from model_registry import load_registry, EXTRA_VENDOR_COLORS, FALLBACK_VENDOR_COLOR
+ADDED = {}
+for _tag, _e in load_registry().items():
+    VENDOR[_e["cohort"]] = _e.get("vendor", "?")
+    DISPLAY[_e["cohort"]] = _e.get("display", _e["cohort"])
+    if _e.get("added"):
+        ADDED[_e["cohort"]] = _e["added"]
+
 IN_SAMPLE = {"haiku-4.5", "sonnet4", "sonnet46", "gemma4-31b", "qwen3-8b"}
 RETIRED = {"sonnet4", "glm-4.6(cloud)"}  # retired by their providers mid-study
 
 VENDOR_COLOR = {"Alibaba": "#2a78d6", "Anthropic": "#1baf7a",
                 "Google": "#eda100", "DeepSeek": "#008300",
                 "Meta": "#4a3aa7", "Zhipu": "#e34948"}
+VENDOR_COLOR.update(EXTRA_VENDOR_COLORS)
 
 
 def collect():
@@ -93,6 +102,8 @@ def notes(m):
         parts.append("in-sample")
     if m["retired"]:
         parts.append("retired by provider")
+    if m["coh"] in ADDED:
+        parts.append(f"added {ADDED[m['coh']]}")
     return ", ".join(parts)
 
 
@@ -205,7 +216,7 @@ def html_page(rows, today):
     trs = []
     for i, m in enumerate(rows, 1):
         dot = (f'<span class="dot" '
-               f'style="background:{VENDOR_COLOR[m["vendor"]]}"></span>')
+               f'style="background:{VENDOR_COLOR.get(m["vendor"], FALLBACK_VENDOR_COLOR)}"></span>')
         pol = (f'<span class="chip {m["policy"]}">{m["policy"]}</span>')
         he = "&mdash;" if m["he"] is None else f"{m['he']:.1f}%"
         note = notes(m)

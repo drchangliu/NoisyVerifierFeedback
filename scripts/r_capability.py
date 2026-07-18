@@ -165,7 +165,7 @@ def main() -> None:
         import matplotlib.pyplot as plt
         fam = {"haiku": "#1f77b4", "sonnet": "#d62728", "gemma": "#2ca02c",
                "qwen": "#9467bd", "llama": "#ff7f0e", "deepseek": "#8c564b",
-               "glm": "#17becf"}
+               "glm": "#17becf", "kimi": "#795548"}
         # Hand-tuned per-label offsets (points) for crowded regions; keys are
         # cohort labels. Default is right-above the marker.
         nudge = {

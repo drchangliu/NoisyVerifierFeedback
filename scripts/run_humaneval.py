@@ -66,6 +66,13 @@ MODELS = [
     ("glm-4.6",           "glm-4.6:cloud",             OLLAMA),
 ]
 
+# Data-driven additions from configs/model_registry.json (no code edits
+# needed for new models; see scripts/model_registry.py).
+from model_registry import load_registry
+for _tag, _e in load_registry().items():
+    MODELS.append((_e.get("humaneval_label", _e["cohort"]),
+                   _tag, _e.get("ollama_base_url", OLLAMA)))
+
 SYSTEM = ("You are an expert Python programmer. Complete the requested function. "
           "Respond with ONLY the complete function definition (including any needed "
           "imports) inside a single ```python code block. No explanation.")

@@ -1,0 +1,12 @@
+{
+  "_comment": "Data-driven model registration for new cohorts. Keyed by the exact model tag as recorded in traces. Consumed by tau_star_prediction.py, make_leaderboard.py, run_humaneval.py, magazine_figure.py -- adding a model here requires no code edits. 'added' is shown in the leaderboard Notes column.",
+  "kimi-k2.7-code:cloud": {
+    "cohort": "kimi-k2.7-code(cloud)",
+    "display": "Kimi-K2.7-code",
+    "vendor": "Moonshot",
+    "added": "2026-07-18",
+    "humaneval_label": "kimi-k2.7-code",
+    "ollama_base_url": "http://localhost:11435",
+    "max_tokens": 16384
+  }
+}

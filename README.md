@@ -21,28 +21,29 @@ reproducible while the main branch moves on.
 ## Trust leaderboard
 
 <!-- LEADERBOARD:START -->
-*Ranked by the regression rate **r** — the probability the model breaks working code when handed a false-alarm security finding (lower = harder to mislead). Updated 2026-07-17. Full table, CIs, and methodology: [LEADERBOARD.md](LEADERBOARD.md) · [web version](https://drchangliu.github.io/NoisyVerifierFeedback/).*
+*Ranked by the regression rate **r** — the probability the model breaks working code when handed a false-alarm security finding (lower = harder to mislead). Updated 2026-07-18. Full table, CIs, and methodology: [LEADERBOARD.md](LEADERBOARD.md) · [web version](https://drchangliu.github.io/NoisyVerifierFeedback/).*
 
 ![Regression rate r falls as model capability rises (16 models, rank correlation -0.89)](docs/r_vs_capability.png)
 
 | # | Model | r | τ\* | Best fixed policy | HumanEval |
 |--:|---|--:|--:|---|--:|
-| 1 | Claude Opus 4.8 | 0.16 | 0.36 | naive | 99.4% |
-| 2 | Qwen3.5-27B | 0.17 | 0.33 | naive | 96.3% |
-| 3 | Claude Sonnet 4.6 | 0.19 | 0.30 | naive | 98.8% |
-| 4 | Gemma4-31B | 0.19 | 0.33 | naive | 100.0% |
-| 5 | Claude Haiku 4.5 | 0.22 | 0.40 | naive | 96.3% |
-| 6 | Qwen3-coder-480B | 0.28 | 0.40 | naive | 96.3% |
-| 7 | DeepSeek-V4-flash | 0.28 | 0.31 | naive | 97.0% |
-| 8 | Qwen3-32B | 0.29 | 0.32 | naive | 97.6% |
-| 9 | GLM-4.6 | 0.29 | 0.36 | naive | — |
-| 10 | Llama3.1-8B | 0.37 | 0.47 | naive | 59.1% |
-| 11 | Claude Sonnet 4 | 0.41 | 0.64 | selective | — |
-| 12 | Qwen3-14B | 0.43 | 0.43 | naive | 96.3% |
-| 13 | Qwen3.6-27B | 0.48 | 0.49 | naive | 98.8% |
-| 14 | Qwen3-8B | 0.57 | 0.56 | selective | 93.9% |
-| 15 | DeepSeek-V2-16B | 0.57 | 0.62 | selective | 42.1% |
-| 16 | Gemma3-27B | 0.72 | 0.67 | selective | 87.8% |
+| 1 | Kimi-K2.7-code | 0.13 | 0.27 | naive | 98.8% |
+| 2 | Claude Opus 4.8 | 0.16 | 0.36 | naive | 99.4% |
+| 3 | Qwen3.5-27B | 0.17 | 0.33 | naive | 96.3% |
+| 4 | Claude Sonnet 4.6 | 0.19 | 0.30 | naive | 98.8% |
+| 5 | Gemma4-31B | 0.19 | 0.33 | naive | 100.0% |
+| 6 | Claude Haiku 4.5 | 0.22 | 0.40 | naive | 96.3% |
+| 7 | Qwen3-coder-480B | 0.28 | 0.40 | naive | 96.3% |
+| 8 | DeepSeek-V4-flash | 0.28 | 0.31 | naive | 97.0% |
+| 9 | Qwen3-32B | 0.29 | 0.32 | naive | 97.6% |
+| 10 | GLM-4.6 | 0.29 | 0.36 | naive | — |
+| 11 | Llama3.1-8B | 0.37 | 0.47 | naive | 59.1% |
+| 12 | Claude Sonnet 4 | 0.41 | 0.64 | selective | — |
+| 13 | Qwen3-14B | 0.43 | 0.43 | naive | 96.3% |
+| 14 | Qwen3.6-27B | 0.48 | 0.49 | naive | 98.8% |
+| 15 | Qwen3-8B | 0.57 | 0.56 | selective | 93.9% |
+| 16 | DeepSeek-V2-16B | 0.57 | 0.62 | selective | 42.1% |
+| 17 | Gemma3-27B | 0.72 | 0.67 | selective | 87.8% |
 <!-- LEADERBOARD:END -->
 
 ## Contents

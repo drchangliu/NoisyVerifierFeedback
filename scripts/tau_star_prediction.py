@@ -63,6 +63,13 @@ PROSPECTIVE_MODELS = {
 }
 LABELS.update({v: v for v in PROSPECTIVE_MODELS.values()})
 
+# Data-driven additions: configs/model_registry.json lets new cohorts join
+# without code edits (see scripts/model_registry.py).
+from model_registry import load_registry
+for _tag, _e in load_registry().items():
+    PROSPECTIVE_MODELS[_tag] = _e["cohort"]
+    LABELS[_e["cohort"]] = _e.get("display", _e["cohort"])
+
 # Option-2 collapse: the same model ID re-measured on different dates is ONE
 # model, not several. The era splits (Haiku Apr/May/Jun; Gemma/Qwen v1/v2) are
 # temporal replicates of a single model ID, so for the headline capability->r
