@@ -97,6 +97,8 @@
   thead th { text-align:left; font-weight:600; color:var(--ink2);
         background:#f7f6f2; border-bottom:1.5px solid #dcdbd4;
         padding:.6rem .8rem; font-size:.72rem; text-transform:uppercase;
+        }
+  thead th .noup { text-transform:none;
         letter-spacing:.03em; vertical-align:bottom; position:sticky; top:0; }
   tbody td { padding:.55rem .8rem; border-bottom:1px solid var(--line); }
   tbody tr:last-child td { border-bottom:none; }
@@ -216,7 +218,7 @@
   <thead><tr><th>#</th><th>Model</th><th>Developer</th>
   <th class="num">Regression rate r<br>(95% CI)</th>
   <th class="num">Fix rate q</th>
-  <th class="num">Surfacing<br>threshold &tau;*</th>
+  <th class="num">Surfacing<br>threshold <span class="noup v">&tau;</span><span class="noup">*</span></th>
   <th>Better fixed policy</th>
   <th class="num">Baseline capability<br>(JointPass@0)</th>
   <th class="num">HumanEval<br>pass@1</th>
