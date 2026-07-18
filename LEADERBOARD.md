@@ -50,7 +50,7 @@
 
 ## The headline finding
 
-Across these models, r falls steeply as capability rises (Spearman −0.89) —
+Across these models, r falls steeply as capability rises (Spearman −0.90) —
 **better models are less gullible** — while q stays flat. So the optimal
 feedback policy is a property of the *model*, slides from "filter
 aggressively" toward "surface everything" as models improve, and expires with

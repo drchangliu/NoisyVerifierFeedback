@@ -25,7 +25,7 @@ from statistics import mean
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tau_star_prediction import load_runs, jp, wilson_ci
-from r_capability import accumulate_qr, MIN_TRIALS
+from r_capability import accumulate_qr, MIN_TRIALS, pearson, ranks
 from humaneval_correlation import humaneval_pass1
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -108,6 +108,7 @@ def notes(m):
 
 
 def md_full(rows, today):
+    rho = pearson(ranks([m['cap'] for m in rows]), ranks([m['r'] for m in rows]))
     L = []
     L.append("# Trust Leaderboard: which models can safely consume unfiltered "
              "static-analyzer feedback?\n")
@@ -155,7 +156,7 @@ def md_full(rows, today):
 
 ## The headline finding
 
-Across these models, r falls steeply as capability rises (Spearman −0.89) —
+Across these models, r falls steeply as capability rises (Spearman RHOVAL) —
 **better models are less gullible** — while q stays flat. So the optimal
 feedback policy is a property of the *model*, slides from "filter
 aggressively" toward "surface everything" as models improve, and expires with
@@ -173,7 +174,7 @@ state is preserved as tag
   generation requests on this benchmark (see `data/smoke_tests/`).
 - Regenerate this file: `python scripts/make_leaderboard.py`.
 """)
-    return "\n".join(L)
+    return "\n".join(L).replace("RHOVAL", f"{rho:+.2f}".replace("+", "\u2212" if rho < 0 else "+").replace("-", "\u2212"))
 
 
 def md_compact(rows, today):
@@ -212,7 +213,97 @@ def inject_readme(compact):
         p.write_text(txt[:idx] + section + txt[idx:])
 
 
+def _interactive_svg(rows):
+    """Inline SVG scatter (capability vs r), vendor-colored, with per-point
+    click-to-toggle labels. Muted points keep a gray dot and drop the name."""
+    W, H = 960, 580
+    X0, X1, Y0, Y1 = 78, 902, 40, 502
+    xmin, xmax, ymin, ymax = 10.0, 66.0, 0.05, 0.80
+    def px(c): return X0 + (c - xmin) / (xmax - xmin) * (X1 - X0)
+    def py(r): return Y0 + (ymax - r) / (ymax - ymin) * (Y1 - Y0)
+
+    caps = [m["cap"] for m in rows]
+    rs = [m["r"] for m in rows]
+    rho = pearson(ranks(caps), ranks(rs))
+    # OLS trend
+    mx, my = mean(caps), mean(rs)
+    b = sum((x - mx) * (y - my) for x, y in zip(caps, rs)) / \
+        sum((x - mx) ** 2 for x in caps)
+    a = my - b * mx
+    tx0, tx1 = min(caps), max(caps)
+
+    parts = [f'<svg viewBox="0 0 {W} {H}" class="chart" '
+             f'role="img" aria-label="Regression rate r vs model capability, '
+             f'{len(rows)} models, rank correlation {rho:+.2f}. Click a point '
+             f'to toggle its name.">']
+    # gridlines + axes
+    for gx in range(10, 61, 10):
+        X = px(gx)
+        parts.append(f'<line x1="{X:.1f}" y1="{Y0}" x2="{X:.1f}" y2="{Y1}" '
+                     f'class="grid"/>')
+        parts.append(f'<text x="{X:.1f}" y="{Y1 + 22}" class="axl" '
+                     f'text-anchor="middle">{gx}</text>')
+    for gy in (0.2, 0.4, 0.6, 0.8):
+        Y = py(gy)
+        parts.append(f'<line x1="{X0}" y1="{Y:.1f}" x2="{X1}" y2="{Y:.1f}" '
+                     f'class="grid"/>')
+        parts.append(f'<text x="{X0 - 12}" y="{Y + 4:.1f}" class="axl" '
+                     f'text-anchor="end">{int(gy * 100)}%</text>')
+    parts.append(f'<text x="{(X0 + X1) / 2:.0f}" y="{H - 8}" class="axt" '
+                 f'text-anchor="middle">Model capability (baseline task '
+                 f'success, %)</text>')
+    parts.append(f'<text transform="translate(20 {(Y0 + Y1) / 2:.0f}) '
+                 f'rotate(-90)" class="axt" text-anchor="middle">Regression '
+                 f'rate r (share of false alarms that break working '
+                 f'code)</text>')
+    parts.append(f'<line x1="{px(tx0):.1f}" y1="{py(a + b * tx0):.1f}" '
+                 f'x2="{px(tx1):.1f}" y2="{py(a + b * tx1):.1f}" '
+                 f'class="trend"/>')
+    parts.append(f'<text x="{X1}" y="{Y0 - 14}" class="rho" '
+                 f'text-anchor="end">rank correlation '
+                 f'{rho:+.2f} across {len(rows)} models</text>')
+
+    # label anti-collision: side by x, push apart vertically per side
+    mid = (X0 + X1) / 2
+    pts = []
+    for m in rows:
+        X, Y = px(m["cap"]), py(m["r"])
+        pts.append({"m": m, "X": X, "Y": Y, "left": X > mid})
+    for side in (True, False):
+        col = sorted([p for p in pts if p["left"] == side], key=lambda p: p["Y"])
+        last = -1e9
+        for p in col:
+            ly = p["Y"] + 4
+            if ly - last < 15:
+                ly = last + 15
+            p["ly"] = ly
+            last = ly
+
+    for p in pts:
+        m = p["m"]
+        color = VENDOR_COLOR.get(m["vendor"], FALLBACK_VENDOR_COLOR)
+        left = p["left"]
+        lx = p["X"] - 11 if left else p["X"] + 11
+        anchor = "end" if left else "start"
+        tip = (f'{m["name"]}: r={m["r"]:.2f}, tau*={m["tau"]:.2f}, '
+               f'JP@0={m["cap"]:.1f}%, best fixed = {m["policy"]}')
+        parts.append(
+            f'<g class="pt" tabindex="0" data-name="{m["name"]}">'
+            f'<title>{tip}</title>'
+            f'<line class="conn" x1="{p["X"]:.1f}" y1="{p["Y"]:.1f}" '
+            f'x2="{lx:.1f}" y2="{p["ly"] - 4:.1f}"/>'
+            f'<circle cx="{p["X"]:.1f}" cy="{p["Y"]:.1f}" r="7" '
+            f'style="fill:{color}"/>'
+            f'<text class="lbl" x="{lx:.1f}" y="{p["ly"]:.1f}" '
+            f'text-anchor="{anchor}">{m["name"]}</text></g>')
+    parts.append('</svg>')
+    return "".join(parts)
+
+
 def html_page(rows, today):
+    n = len(rows)
+    chart = _interactive_svg(rows)
+
     trs = []
     for i, m in enumerate(rows, 1):
         dot = (f'<span class="dot" '
@@ -220,6 +311,12 @@ def html_page(rows, today):
         pol = (f'<span class="chip {m["policy"]}">{m["policy"]}</span>')
         he = "&mdash;" if m["he"] is None else f"{m['he']:.1f}%"
         note = notes(m)
+        note = note.replace(
+            "in-sample",
+            '<abbr class="tip" title="One of the five models used to '
+            'formulate the r-law. All other models were measured '
+            'prospectively, after the law and decision rule were frozen '
+            '&mdash; so they are genuine out-of-sample tests.">in-sample</abbr>')
         trs.append(
             f"<tr><td class='rank'>{i}</td>"
             f"<td class='model'>{dot}{m['name']}"
@@ -233,7 +330,7 @@ def html_page(rows, today):
             f"<td class='num'>{m['cap']:.1f}%</td>"
             f"<td class='num'>{he}</td>"
             f"<td class='num'>{m['fpt']}/{m['tpt']}</td></tr>")
-    n = len(rows)
+
     return f"""<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
@@ -248,15 +345,40 @@ def html_page(rows, today):
   main {{ max-width:1000px; margin:0 auto; }}
   h1 {{ font-size:1.7rem; line-height:1.25; letter-spacing:-0.01em; }}
   .sub {{ color:var(--ink2); margin:0.6rem 0 1.6rem; max-width:46em; }}
-  .figure {{ margin:1.6rem 0; }}
-  .figure img {{ max-width:100%; height:auto; border:1px solid var(--line);
-                 border-radius:8px; }}
+  .chartwrap {{ margin:1.4rem 0 0.4rem; }}
+  .chart {{ width:100%; height:auto; border:1px solid var(--line);
+            border-radius:8px; background:#fff; touch-action:manipulation; }}
+  .chart .grid {{ stroke:#ececE6; stroke-width:1; }}
+  .chart .trend {{ stroke:#9a998f; stroke-width:1.6; stroke-dasharray:6 5;
+                   opacity:.7; }}
+  .chart .axl {{ fill:var(--ink2); font-size:15px; }}
+  .chart .axt {{ fill:var(--ink); font-size:17px; }}
+  .chart .rho {{ fill:var(--ink2); font-size:15px; }}
+  .chart .pt {{ cursor:pointer; }}
+  .chart .pt circle {{ stroke:#fff; stroke-width:1.6; transition:fill .1s; }}
+  .chart .lbl {{ fill:var(--ink); font-size:14px;
+                 paint-order:stroke; stroke:#fff; stroke-width:3px; }}
+  .chart .conn {{ stroke:#bdbcb4; stroke-width:.8; opacity:0; }}
+  .chart .pt:hover circle {{ stroke:var(--ink); }}
+  .chart .pt.muted circle {{ fill:#cbcac4 !important; }}
+  .chart .pt.muted .lbl {{ display:none; }}
+  .chart .pt:focus {{ outline:none; }}
+  .chart .pt:focus circle {{ stroke:#2a78d6; stroke-width:2.4; }}
+  .controls {{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;
+               color:var(--ink2); font-size:.9rem; margin:.2rem 0 1.4rem; }}
+  .controls button {{ font:inherit; font-size:.85rem; padding:.25rem .7rem;
+      border:1px solid var(--line); border-radius:99px; background:#fff;
+      color:var(--ink); cursor:pointer; }}
+  .controls button:hover {{ border-color:var(--ink2); }}
+  .controls .grow {{ flex:1; }}
+  .controls a.dl {{ color:#2a78d6; }}
   .tablewrap {{ overflow-x:auto; margin:1.6rem 0 0.8rem; }}
   table {{ border-collapse:collapse; width:100%; font-size:0.92rem;
            white-space:nowrap; }}
   th {{ text-align:left; font-weight:600; color:var(--ink2);
         border-bottom:2px solid var(--ink); padding:0.45rem 0.7rem;
-        font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; }}
+        font-size:0.76rem; text-transform:uppercase; letter-spacing:0.03em;
+        vertical-align:bottom; }}
   td {{ padding:0.5rem 0.7rem; border-bottom:1px solid var(--line); }}
   td.rank {{ color:var(--ink2); }}
   td.num, th.num {{ text-align:right; font-variant-numeric:tabular-nums; }}
@@ -266,14 +388,16 @@ def html_page(rows, today):
   .ci {{ color:var(--ink2); font-size:0.85em; }}
   .note {{ color:var(--ink2); font-weight:400; font-size:0.82em;
            margin-left:0.6em; }}
+  abbr.tip {{ text-decoration:underline dotted; cursor:help; }}
   .chip {{ font-size:0.78rem; padding:0.1rem 0.55rem; border-radius:99px;
            border:1px solid var(--line); }}
   .chip.naive {{ background:#eef7f2; }}
   .chip.selective {{ background:#fdf3e2; }}
-  .how {{ color:var(--ink2); font-size:0.92rem; max-width:52em;
+  .how {{ color:var(--ink2); font-size:0.92rem; max-width:54em;
           margin-top:1.4rem; }}
   .how b {{ color:var(--ink); }}
-  .how p {{ margin:0.5rem 0; }}
+  .how ul {{ margin:0.5rem 0 0.8rem 1.1rem; padding:0; }}
+  .how li {{ margin:0.35rem 0; }}
   a {{ color:#2a78d6; text-decoration:none; }}
   a:hover {{ text-decoration:underline; }}
   footer {{ margin-top:2rem; color:var(--ink2); font-size:0.85rem; }}
@@ -285,33 +409,51 @@ handed a <em>false-alarm</em> security finding about its own working code,
 &ldquo;fixes&rdquo; the non-problem and breaks the code. Lower is better
 &mdash; a low-r model recognizes false alarms instead of obeying them.</p>
 
-<div class="figure"><img src="r_vs_capability.png"
-  alt="Scatter plot: regression rate r falls as model capability rises
-       across {n} models (rank correlation -0.89)"></div>
+<div class="chartwrap">{chart}</div>
+<div class="controls">
+  <span><b>Tip:</b> click (or tab + Enter) any point to hide its name and
+    gray its dot; declutter to see the trend.</span>
+  <span class="grow"></span>
+  <button id="showAll" type="button">Show all names</button>
+  <button id="hideAll" type="button">Hide all names</button>
+  <a class="dl" href="r_vs_capability.png" download>Download original figure (PNG)</a>
+</div>
 
 <div class="tablewrap"><table>
 <thead><tr><th>#</th><th>Model</th><th>Developer</th>
-<th class="num">r (95% CI)</th><th class="num">q</th>
-<th class="num">&tau;*</th><th>Best fixed policy</th>
-<th class="num">JP@0</th><th class="num">HumanEval</th>
-<th class="num">FP/TP trials</th></tr></thead>
+<th class="num">Regression rate r<br>(95% CI)</th>
+<th class="num">Fix rate q</th>
+<th class="num">Surfacing<br>threshold &tau;*</th>
+<th>Best fixed policy</th>
+<th class="num">Baseline capability<br>(JointPass@0)</th>
+<th class="num">HumanEval<br>pass@1</th>
+<th class="num">FP / TP<br>trials</th></tr></thead>
 <tbody>{''.join(trs)}</tbody></table></div>
 
 <div class="how">
-<p><b>r</b> &mdash; share of false-positive findings whose &ldquo;fix&rdquo;
-broke working code. <b>q</b> &mdash; share of true positives actually fixed
-(secure <em>and</em> tests still pass). <b>&tau;* = r/(q+r)</b> &mdash; feed
-the model a finding only if the rule&rsquo;s historical precision exceeds
-this threshold. <b>Best fixed policy</b> &mdash; the better of the two
-deployed fixed policies, <em>naive</em> (surface everything) vs
-<em>selective</em> (only rules with &gt;50% precision); &ldquo;naive&rdquo;
-does not mean surfacing everything is optimal &mdash; the optimum filters at
-the model&rsquo;s own &tau;*. <b>JP@0</b> &mdash; baseline JointPass
-(functionally correct <em>and</em> vulnerability-free) on the 51-item core
-benchmark. Combined Semgrep+Bandit analyzer, multi-seed; <em>in-sample</em>
-marks the five models used to formulate the r-law, all others measured
-prospectively.</p>
-<p>The headline: r falls steeply with capability (Spearman &minus;0.89) while
+<ul>
+<li><b>Regression rate r</b> &mdash; share of false-positive findings whose
+  &ldquo;fix&rdquo; broke working code. The ranking key: lower means the
+  model recognizes false alarms instead of obeying them.</li>
+<li><b>Fix rate q</b> &mdash; share of true positives the model actually
+  fixed (secure <em>and</em> tests still pass).</li>
+<li><b>Surfacing threshold &tau;* = r/(q+r)</b> &mdash; feed the model a
+  finding only if the rule&rsquo;s historical precision exceeds this
+  threshold.</li>
+<li><b>Best fixed policy</b> &mdash; the better of the two deployed fixed
+  policies, <em>naive</em> (surface every finding) vs <em>selective</em>
+  (only rules above 50% precision). &ldquo;Naive&rdquo; does not mean
+  surfacing everything is optimal &mdash; the optimum filters at the
+  model&rsquo;s own &tau;*, which is above zero for every model.</li>
+<li><b>Baseline capability (JointPass@0)</b> &mdash; fraction of items whose
+  pre-feedback code is both functionally correct and vulnerability-free, on
+  the 51-item core benchmark (combined Semgrep+Bandit analyzer, multi-seed).</li>
+<li><b>HumanEval pass@1</b> &mdash; external functional-capability axis
+  (disjoint tasks, no security signal).</li>
+<li><b>in-sample</b> (Notes) &mdash; one of the five models used to
+  formulate the r-law; all others were measured prospectively.</li>
+</ul>
+<p>The headline: r falls steeply with capability (Spearman &minus;0.90) while
 q stays flat &mdash; <b>better models are less gullible</b> &mdash; so the
 right feedback policy is a property of the model and expires with every model
 update. One frontier model (Claude Fable&nbsp;5) could not be measured at
@@ -325,6 +467,22 @@ Selective Feedback for LLM Code Agents under Noisy Static Analysis</em> (under r
 Engineering; submitted state:
 <a href="https://github.com/drchangliu/NoisyVerifierFeedback/releases/tag/emse-2026-07">
 tag emse-2026-07</a>) &middot; Chang Liu, Ohio University</footer>
+<script>
+(function() {{
+  var pts = document.querySelectorAll('.chart .pt');
+  function toggle(g) {{ g.classList.toggle('muted'); }}
+  pts.forEach(function(g) {{
+    g.addEventListener('click', function() {{ toggle(g); }});
+    g.addEventListener('keydown', function(e) {{
+      if (e.key === 'Enter' || e.key === ' ') {{ e.preventDefault(); toggle(g); }}
+    }});
+  }});
+  document.getElementById('showAll').onclick = function() {{
+    pts.forEach(function(g) {{ g.classList.remove('muted'); }}); }};
+  document.getElementById('hideAll').onclick = function() {{
+    pts.forEach(function(g) {{ g.classList.add('muted'); }}); }};
+}})();
+</script>
 </main></body></html>
 """
 
