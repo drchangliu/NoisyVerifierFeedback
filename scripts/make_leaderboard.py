@@ -300,18 +300,297 @@ def _interactive_svg(rows):
     return "".join(parts)
 
 
+_TEMPLATE = """<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Trust Leaderboard — Noisy Verifier Feedback</title>
+<style>
+  :root {
+    --ink:#17171d; --ink2:#5b5b66; --ink3:#8a8a93; --line:#e7e6e1;
+    --bg:#faf9f7; --card:#fff; --accent:#215d8c; --accent2:#2f7fb5;
+    --soft:#eef3f7; --naive:#e9f5ef; --sel:#fbf1e0;
+  }
+  * { box-sizing:border-box; margin:0; }
+  html { -webkit-text-size-adjust:100%; }
+  body { font:16px/1.62 ui-sans-serif,-apple-system,"Segoe UI",Roboto,
+         Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg);
+         padding:0 1.1rem 5rem; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1060px; margin:0 auto; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  em { font-style:italic; }
+
+  .mast { padding:3.2rem 0 1.8rem; border-bottom:1px solid var(--line); }
+  .eyebrow { text-transform:uppercase; letter-spacing:.13em; font-size:.71rem;
+             font-weight:700; color:var(--accent); }
+  h1 { font-size:2.1rem; line-height:1.14; letter-spacing:-.022em;
+       margin:.55rem 0 .75rem; max-width:24ch; font-weight:700; }
+  .lede { color:var(--ink2); font-size:1.07rem; max-width:62ch; }
+  .lede b { color:var(--ink); }
+  .stats { display:flex; flex-wrap:wrap; gap:.35rem 1.3rem; margin-top:1.4rem;
+           font-size:.83rem; color:var(--ink2); }
+  .stats span b { color:var(--ink); font-variant-numeric:tabular-nums; }
+
+  section { margin:2.4rem 0; }
+  .sec-label { text-transform:uppercase; letter-spacing:.1em; font-size:.71rem;
+               font-weight:700; color:var(--ink3); margin-bottom:.85rem; }
+  .card { background:var(--card); border:1px solid var(--line);
+          border-radius:14px; box-shadow:0 1px 3px rgba(20,20,30,.04); }
+
+  /* rates card with real stacked-fraction formulas */
+  .rates { padding:.4rem 1.7rem 1.4rem; }
+  .rate { padding:1.25rem 0; border-top:1px solid var(--line);
+          display:grid; grid-template-columns:1fr auto; gap:.4rem 2rem;
+          align-items:center; }
+  .rate:first-child { border-top:none; }
+  .rate h3 { font-size:1.02rem; font-weight:650; }
+  .rate .tag { font-size:.7rem; font-weight:700; text-transform:uppercase;
+               letter-spacing:.05em; padding:.12rem .5rem; border-radius:99px;
+               margin-left:.5rem; vertical-align:.08em; }
+  .rate .tag.up { background:var(--naive); color:#1c6b45; }
+  .rate .tag.down { background:var(--sel); color:#9a5b09; }
+  .rate .tag.key { background:var(--soft); color:var(--accent); }
+  .rate p { color:var(--ink2); font-size:.93rem; margin-top:.3rem;
+            max-width:52ch; }
+  .eq { display:flex; align-items:center; justify-content:flex-end; gap:.5rem;
+        font-size:1.16rem; color:var(--ink); white-space:nowrap; }
+  .v { font-family:"Cambria Math","STIX Two Math","Times New Roman",Georgia,
+       serif; font-style:italic; font-size:1.08em; }
+  .frac { display:inline-flex; flex-direction:column; text-align:center;
+          line-height:1.22; font-size:.82em; }
+  .frac .n { border-bottom:1.6px solid currentColor; padding:0 .55em .12em; }
+  .frac .d { padding:.12em .55em 0; }
+  .rule { margin-top:1.1rem; padding-top:1rem; border-top:1px dashed var(--line);
+          color:var(--ink2); font-size:.95rem; display:flex; gap:.6rem;
+          align-items:center; flex-wrap:wrap; }
+  .rule .eq { font-size:1.05rem; justify-content:flex-start; }
+
+  .chartcard { padding:1rem 1.1rem .4rem; }
+  .chart { width:100%; height:auto; display:block; touch-action:manipulation; }
+  .chart .grid { stroke:#eceCE6; stroke-width:1; }
+  .chart .trend { stroke:#9a998f; stroke-width:1.6; stroke-dasharray:6 5; opacity:.7; }
+  .chart .axl { fill:var(--ink2); font-size:15px; }
+  .chart .axt { fill:var(--ink); font-size:16px; }
+  .chart .rho { fill:var(--ink2); font-size:15px; }
+  .chart .pt { cursor:pointer; }
+  .chart .pt circle { stroke:#fff; stroke-width:1.6; transition:fill .1s; }
+  .chart .lbl { fill:var(--ink); font-size:14px; paint-order:stroke;
+                stroke:#fff; stroke-width:3px; }
+  .chart .conn { stroke:#bdbcb4; stroke-width:.8; opacity:0; }
+  .chart .pt:hover circle { stroke:var(--ink); }
+  .chart .pt.muted circle { fill:#cbcac4 !important; }
+  .chart .pt.muted .lbl { display:none; }
+  .chart .pt:focus { outline:none; }
+  .chart .pt:focus circle { stroke:var(--accent2); stroke-width:2.4; }
+  .controls { display:flex; gap:.55rem; align-items:center; flex-wrap:wrap;
+              color:var(--ink2); font-size:.88rem; padding:.3rem .3rem 1rem; }
+  .controls button { font:inherit; font-size:.84rem; padding:.3rem .8rem;
+      border:1px solid var(--line); border-radius:99px; background:#fff;
+      color:var(--ink); cursor:pointer; }
+  .controls button:hover { border-color:var(--accent); color:var(--accent); }
+  .controls .grow { flex:1; }
+  .controls a.dl { color:var(--accent); font-weight:600; }
+
+  .tablewrap { overflow-x:auto; border:1px solid var(--line);
+               border-radius:14px; background:#fff; }
+  table { border-collapse:collapse; width:100%; font-size:.9rem;
+          white-space:nowrap; }
+  thead th { text-align:left; font-weight:600; color:var(--ink2);
+        background:#f7f6f2; border-bottom:1.5px solid #dcdbd4;
+        padding:.6rem .8rem; font-size:.72rem; text-transform:uppercase;
+        letter-spacing:.03em; vertical-align:bottom; position:sticky; top:0; }
+  tbody td { padding:.55rem .8rem; border-bottom:1px solid var(--line); }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:nth-child(even) { background:#fbfaf7; }
+  tbody tr:hover { background:var(--soft); }
+  td.rank { color:var(--ink3); font-variant-numeric:tabular-nums; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  td.model { font-weight:600; }
+  td.vend { color:var(--ink2); }
+  .dot { display:inline-block; width:.7em; height:.7em; border-radius:50%;
+         margin-right:.5em; vertical-align:.02em; }
+  .ci { color:var(--ink3); font-size:.85em; }
+  .note { color:var(--ink3); font-weight:400; font-size:.8em; margin-left:.55em; }
+  abbr.tip { text-decoration:underline dotted; cursor:help; }
+  .chip { font-size:.77rem; padding:.12rem .6rem; border-radius:99px;
+          border:1px solid var(--line); }
+  .chip.naive { background:var(--naive); }
+  .chip.selective { background:var(--sel); }
+
+  .how { color:var(--ink2); font-size:.93rem; max-width:60ch; }
+  .how b { color:var(--ink); }
+  .how ul { margin:.5rem 0 .9rem 1.1rem; padding:0; }
+  .how li { margin:.38rem 0; }
+  .headline { border-left:3px solid var(--accent); padding:.2rem 0 .2rem 1rem;
+              margin-top:1.4rem; color:var(--ink); font-size:1rem; }
+  footer { margin-top:2.6rem; padding-top:1.4rem; border-top:1px solid var(--line);
+           color:var(--ink3); font-size:.83rem; }
+  @media (max-width:620px) {
+    h1 { font-size:1.7rem; } .rate { grid-template-columns:1fr; }
+    .eq { justify-content:flex-start; }
+  }
+</style></head><body><div class="wrap">
+
+<header class="mast">
+  <div class="eyebrow">LLM Trust Leaderboard</div>
+  <h1>How much should each LLM trust its static analyzer &mdash; and how should
+  you filter its findings?</h1>
+  <p class="lede">AI coding agents fix static-analyzer findings in a loop, but
+  most findings are false alarms (combined Semgrep+Bandit precision is
+  <b>23.8%</b> on LLM-generated Python). The answer is neither to trust every
+  finding nor to ignore them all, but to <b>filter per model</b> &mdash; from
+  real fix-loop interactions we measure two rates and derive one threshold that
+  says which findings a given model should even see.</p>
+  <div class="stats">
+    <span><b>__N__</b> models</span>
+    <span><b>__NV__</b> developers</span>
+    <span>ranked by regression rate <span class="v">r</span></span>
+    <span>updated <b>__TODAY__</b></span>
+  </div>
+</header>
+
+<section>
+  <div class="sec-label">The three rates</div>
+  <div class="card rates">
+    <div class="rate">
+      <div>
+        <h3>Fix rate <span class="v">q</span>
+          <span class="tag up">higher is better</span></h3>
+        <p>Of the <em>real</em> findings surfaced to the model, the fraction it
+        correctly fixes &mdash; secure <em>and</em> tests still pass.</p>
+      </div>
+      <div class="eq"><span class="v">q</span> =
+        <span class="frac"><span class="n">true findings the model fixed</span>
+        <span class="d">true findings shown</span></span></div>
+    </div>
+    <div class="rate">
+      <div>
+        <h3>Regression rate <span class="v">r</span>
+          <span class="tag key">the ranking key</span>
+          <span class="tag down">lower is better</span></h3>
+        <p>Of the <em>false</em> findings surfaced, the fraction where the
+        model&rsquo;s &ldquo;fix&rdquo; breaks working code. A low-<span
+        class="v">r</span> model recognizes false alarms instead of obeying
+        them.</p>
+      </div>
+      <div class="eq"><span class="v">r</span> =
+        <span class="frac"><span class="n">working code the &ldquo;fix&rdquo; broke</span>
+        <span class="d">false alarms shown</span></span></div>
+    </div>
+    <div class="rate">
+      <div>
+        <h3>Surfacing threshold <span class="v">&tau;</span><sup>*</sup></h3>
+        <p>Feed the model a finding only if its rule&rsquo;s historical
+        precision <span class="v">p</span> exceeds <span class="v">&tau;</span><sup>*</sup>;
+        filter everything below. Low <span class="v">r</span> &rArr; low
+        threshold &rArr; surface almost everything; high <span class="v">r</span>
+        &rArr; filter aggressively.</p>
+      </div>
+      <div class="eq"><span class="v">&tau;</span><sup>*</sup> =
+        <span class="frac"><span class="n"><span class="v">r</span></span>
+        <span class="d"><span class="v">q</span> + <span class="v">r</span></span></span></div>
+    </div>
+    <div class="rule">
+      <span>Surfacing rule:</span>
+      <span class="eq">surface a finding &nbsp;&hArr;&nbsp;
+        <span class="v">p</span> &gt; <span class="v">&tau;</span><sup>*</sup></span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">Better models are less gullible</div>
+  <div class="card chartcard">__CHART__</div>
+  <div class="controls">
+    <span><b>Tip:</b> click (or tab + Enter) any point to hide its name and
+      gray its dot &mdash; declutter to see the trend.</span>
+    <span class="grow"></span>
+    <button id="showAll" type="button">Show all names</button>
+    <button id="hideAll" type="button">Hide all names</button>
+    <a class="dl" href="r_vs_capability.png" download>Download original figure (PNG)</a>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">The leaderboard &mdash; ranked by regression rate <span class="v">r</span> (lower is better)</div>
+  <div class="tablewrap"><table>
+  <thead><tr><th>#</th><th>Model</th><th>Developer</th>
+  <th class="num">Regression rate r<br>(95% CI)</th>
+  <th class="num">Fix rate q</th>
+  <th class="num">Surfacing<br>threshold &tau;*</th>
+  <th>Better fixed policy</th>
+  <th class="num">Baseline capability<br>(JointPass@0)</th>
+  <th class="num">HumanEval<br>pass@1</th>
+  <th class="num">FP / TP<br>trials</th></tr></thead>
+  <tbody>__ROWS__</tbody></table></div>
+</section>
+
+<section class="how">
+  <div class="sec-label">More on the columns</div>
+  <ul>
+  <li><b>Better fixed policy</b> &mdash; the better of the two deployed fixed
+    policies, <em>naive</em> (surface every finding) vs <em>selective</em>
+    (only rules above 50% precision). &ldquo;Naive&rdquo; does not mean
+    surfacing everything is optimal &mdash; the optimum filters at the
+    model&rsquo;s own <span class="v">&tau;</span><sup>*</sup>, which is above
+    zero for every model.</li>
+  <li><b>Baseline capability (JointPass@0)</b> &mdash; fraction of items whose
+    pre-feedback code is both functionally correct and vulnerability-free, on
+    the 51-item core benchmark (combined Semgrep+Bandit analyzer, multi-seed).</li>
+  <li><b>HumanEval pass@1</b> &mdash; external functional-capability axis
+    (disjoint tasks, no security signal).</li>
+  <li><b>in-sample</b> (Notes) &mdash; one of the five models used to formulate
+    the r-law; all others were measured prospectively.</li>
+  </ul>
+  <p class="headline">The headline: <span class="v">r</span> falls steeply with
+  capability (Spearman &minus;0.90) while <span class="v">q</span> stays flat
+  &mdash; <b>better models are less gullible</b> &mdash; so the right feedback
+  policy is a property of the model and expires with every model update. One
+  frontier model (Claude Fable&nbsp;5) could not be measured at all: its safety
+  layer refused 9/10 benchmark requests.</p>
+</section>
+
+<footer>Updated __TODAY__ &middot;
+<a href="https://github.com/drchangliu/NoisyVerifierFeedback">code, raw traces
+&amp; methodology</a> &middot; paper: <em>Better Models Are Less Gullible:
+Selective Feedback for LLM Code Agents under Noisy Static Analysis</em> (under
+review at Empirical Software Engineering; submitted state:
+<a href="https://github.com/drchangliu/NoisyVerifierFeedback/releases/tag/emse-2026-07">tag
+emse-2026-07</a>) &middot; Chang Liu, Ohio University</footer>
+
+<script>
+(function() {
+  var pts = document.querySelectorAll('.chart .pt');
+  function toggle(g) { g.classList.toggle('muted'); }
+  pts.forEach(function(g) {
+    g.addEventListener('click', function() { toggle(g); });
+    g.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(g); }
+    });
+  });
+  document.getElementById('showAll').onclick = function() {
+    pts.forEach(function(g) { g.classList.remove('muted'); }); };
+  document.getElementById('hideAll').onclick = function() {
+    pts.forEach(function(g) { g.classList.add('muted'); }); };
+})();
+</script>
+</div></body></html>
+"""
+
+
 def html_page(rows, today):
     n = len(rows)
+    nv = len({m["vendor"] for m in rows})
     chart = _interactive_svg(rows)
 
     trs = []
     for i, m in enumerate(rows, 1):
         dot = (f'<span class="dot" '
                f'style="background:{VENDOR_COLOR.get(m["vendor"], FALLBACK_VENDOR_COLOR)}"></span>')
-        pol = (f'<span class="chip {m["policy"]}">{m["policy"]}</span>')
+        pol = f'<span class="chip {m["policy"]}">{m["policy"]}</span>'
         he = "&mdash;" if m["he"] is None else f"{m['he']:.1f}%"
-        note = notes(m)
-        note = note.replace(
+        note = notes(m).replace(
             "in-sample",
             '<abbr class="tip" title="One of the five models used to '
             'formulate the r-law. All other models were measured '
@@ -319,9 +598,9 @@ def html_page(rows, today):
             '&mdash; so they are genuine out-of-sample tests.">in-sample</abbr>')
         trs.append(
             f"<tr><td class='rank'>{i}</td>"
-            f"<td class='model'>{dot}{m['name']}"
+            f"<td class='model'>{dot}<span>{m['name']}</span>"
             + (f"<span class='note'>{note}</span>" if note else "") + "</td>"
-            f"<td>{m['vendor']}</td>"
+            f"<td class='vend'>{m['vendor']}</td>"
             f"<td class='num'><b>{m['r']:.2f}</b> <span class='ci'>"
             f"[{m['r_lo']:.2f}, {m['r_hi']:.2f}]</span></td>"
             f"<td class='num'>{m['q']:.2f}</td>"
@@ -331,196 +610,11 @@ def html_page(rows, today):
             f"<td class='num'>{he}</td>"
             f"<td class='num'>{m['fpt']}/{m['tpt']}</td></tr>")
 
-    return f"""<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LLM Trust Leaderboard &mdash; Noisy Verifier Feedback</title>
-<style>
-  :root {{ --ink:#1a1a19; --ink2:#5f5e56; --line:#e4e3dd; --bg:#fdfdfc; }}
-  * {{ box-sizing:border-box; margin:0; }}
-  body {{ font:16px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,
-         sans-serif; color:var(--ink); background:var(--bg);
-         padding:2.5rem 1rem 4rem; }}
-  main {{ max-width:1000px; margin:0 auto; }}
-  h1 {{ font-size:1.7rem; line-height:1.25; letter-spacing:-0.01em; }}
-  .sub {{ color:var(--ink2); margin:0.6rem 0 1rem; max-width:48em; }}
-  .rates {{ margin:1rem 0 1.4rem; max-width:48em; border:1px solid var(--line);
-            border-radius:8px; background:#fff; padding:0.4rem 1rem; }}
-  .rates dt {{ font-weight:600; margin-top:0.7rem; }}
-  .rates dd {{ margin:0.15rem 0 0.2rem; color:var(--ink2); }}
-  .rates .f {{ font-family:"SFMono-Regular",Consolas,"Liberation Mono",
-               Menlo,monospace; background:#f3f2ec; border-radius:4px;
-               padding:0.05rem 0.35rem; color:var(--ink); white-space:nowrap; }}
-  .var {{ font-style:italic; }}
-  .interp {{ color:var(--ink2); margin:0 0 0.4rem; max-width:48em; }}
-  .chartwrap {{ margin:1.4rem 0 0.4rem; }}
-  .chart {{ width:100%; height:auto; border:1px solid var(--line);
-            border-radius:8px; background:#fff; touch-action:manipulation; }}
-  .chart .grid {{ stroke:#ececE6; stroke-width:1; }}
-  .chart .trend {{ stroke:#9a998f; stroke-width:1.6; stroke-dasharray:6 5;
-                   opacity:.7; }}
-  .chart .axl {{ fill:var(--ink2); font-size:15px; }}
-  .chart .axt {{ fill:var(--ink); font-size:17px; }}
-  .chart .rho {{ fill:var(--ink2); font-size:15px; }}
-  .chart .pt {{ cursor:pointer; }}
-  .chart .pt circle {{ stroke:#fff; stroke-width:1.6; transition:fill .1s; }}
-  .chart .lbl {{ fill:var(--ink); font-size:14px;
-                 paint-order:stroke; stroke:#fff; stroke-width:3px; }}
-  .chart .conn {{ stroke:#bdbcb4; stroke-width:.8; opacity:0; }}
-  .chart .pt:hover circle {{ stroke:var(--ink); }}
-  .chart .pt.muted circle {{ fill:#cbcac4 !important; }}
-  .chart .pt.muted .lbl {{ display:none; }}
-  .chart .pt:focus {{ outline:none; }}
-  .chart .pt:focus circle {{ stroke:#2a78d6; stroke-width:2.4; }}
-  .controls {{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;
-               color:var(--ink2); font-size:.9rem; margin:.2rem 0 1.4rem; }}
-  .controls button {{ font:inherit; font-size:.85rem; padding:.25rem .7rem;
-      border:1px solid var(--line); border-radius:99px; background:#fff;
-      color:var(--ink); cursor:pointer; }}
-  .controls button:hover {{ border-color:var(--ink2); }}
-  .controls .grow {{ flex:1; }}
-  .controls a.dl {{ color:#2a78d6; }}
-  .tablewrap {{ overflow-x:auto; margin:1.6rem 0 0.8rem; }}
-  table {{ border-collapse:collapse; width:100%; font-size:0.92rem;
-           white-space:nowrap; }}
-  th {{ text-align:left; font-weight:600; color:var(--ink2);
-        border-bottom:2px solid var(--ink); padding:0.45rem 0.7rem;
-        font-size:0.76rem; text-transform:uppercase; letter-spacing:0.03em;
-        vertical-align:bottom; }}
-  td {{ padding:0.5rem 0.7rem; border-bottom:1px solid var(--line); }}
-  td.rank {{ color:var(--ink2); }}
-  td.num, th.num {{ text-align:right; font-variant-numeric:tabular-nums; }}
-  td.model {{ font-weight:600; }}
-  .dot {{ display:inline-block; width:0.65em; height:0.65em;
-          border-radius:50%; margin-right:0.5em; }}
-  .ci {{ color:var(--ink2); font-size:0.85em; }}
-  .note {{ color:var(--ink2); font-weight:400; font-size:0.82em;
-           margin-left:0.6em; }}
-  abbr.tip {{ text-decoration:underline dotted; cursor:help; }}
-  .chip {{ font-size:0.78rem; padding:0.1rem 0.55rem; border-radius:99px;
-           border:1px solid var(--line); }}
-  .chip.naive {{ background:#eef7f2; }}
-  .chip.selective {{ background:#fdf3e2; }}
-  .how {{ color:var(--ink2); font-size:0.92rem; max-width:54em;
-          margin-top:1.4rem; }}
-  .how b {{ color:var(--ink); }}
-  .how ul {{ margin:0.5rem 0 0.8rem 1.1rem; padding:0; }}
-  .how li {{ margin:0.35rem 0; }}
-  a {{ color:#2a78d6; text-decoration:none; }}
-  a:hover {{ text-decoration:underline; }}
-  footer {{ margin-top:2rem; color:var(--ink2); font-size:0.85rem; }}
-</style></head><body><main>
-<h1>How much should each LLM trust its static analyzer &mdash; and how should
-you filter its findings?</h1>
-<p class="sub">AI coding agents fix static-analyzer findings in a loop, but
-most findings are false alarms (combined Semgrep+Bandit precision is
-<b>23.8%</b> on LLM-generated Python). The answer is neither to trust every
-finding nor to ignore them all, but to <b>filter per model</b>. From real
-fix-loop interactions we measure two rates and derive one threshold that
-tells you which findings a given model should even see.</p>
-
-<dl class="rates">
-<dt>Fix rate <span class="var">q</span>
-  <span class="f">q = (true findings fixed) / (true findings shown)</span></dt>
-<dd>Of <em>real</em> findings surfaced to the model, the fraction it correctly
-  fixes (secure <em>and</em> tests still pass). Higher is better.</dd>
-<dt>Regression rate <span class="var">r</span>
-  <span class="f">r = (working code broken) / (false alarms shown)</span></dt>
-<dd>Of <em>false</em> findings surfaced, the fraction where the model&rsquo;s
-  &ldquo;fix&rdquo; breaks working code. <b>Lower is better &mdash; this is the
-  ranking key.</b> A low-<span class="var">r</span> model recognizes false
-  alarms instead of obeying them.</dd>
-<dt>Surfacing threshold <span class="var">&tau;*</span>
-  <span class="f">&tau;* = r / (q + r)</span></dt>
-<dd>Surface a finding to this model only if its rule&rsquo;s historical
-  precision <span class="var">p</span> exceeds <span class="var">&tau;*</span>;
-  filter everything below. Low <span class="var">r</span> &rArr; low
-  <span class="var">&tau;*</span> &rArr; surface almost everything; high
-  <span class="var">r</span> &rArr; high <span class="var">&tau;*</span> &rArr;
-  filter aggressively.</dd>
-</dl>
-
-<p class="interp">In the table below, models are <b>ranked by
-<span class="var">r</span></b> (lowest first). Read across: a small
-<span class="var">&tau;*</span> means the model can safely see almost all
-findings; a large one means most should be filtered out. <b>Better fixed
-policy</b> names which of the two simple defaults &mdash; <em>naive</em>
-(surface everything) or <em>selective</em> (filter at 50% precision) &mdash;
-lands closer to that model&rsquo;s <span class="var">&tau;*</span>. This is a
-live leaderboard of {n} models, refreshed as new models ship.</p>
-
-<div class="chartwrap">{chart}</div>
-<div class="controls">
-  <span><b>Tip:</b> click (or tab + Enter) any point to hide its name and
-    gray its dot; declutter to see the trend.</span>
-  <span class="grow"></span>
-  <button id="showAll" type="button">Show all names</button>
-  <button id="hideAll" type="button">Hide all names</button>
-  <a class="dl" href="r_vs_capability.png" download>Download original figure (PNG)</a>
-</div>
-
-<div class="tablewrap"><table>
-<thead><tr><th>#</th><th>Model</th><th>Developer</th>
-<th class="num">Regression rate r<br>(95% CI)</th>
-<th class="num">Fix rate q</th>
-<th class="num">Surfacing<br>threshold &tau;*</th>
-<th>Better fixed policy</th>
-<th class="num">Baseline capability<br>(JointPass@0)</th>
-<th class="num">HumanEval<br>pass@1</th>
-<th class="num">FP / TP<br>trials</th></tr></thead>
-<tbody>{''.join(trs)}</tbody></table></div>
-
-<div class="how">
-<p><b>More on the table columns</b> (the three rates <span class="var">q</span>,
-<span class="var">r</span>, <span class="var">&tau;*</span> are defined at the
-top):</p>
-<ul>
-<li><b>Better fixed policy</b> &mdash; the better of the two deployed fixed
-  policies, <em>naive</em> (surface every finding) vs <em>selective</em>
-  (only rules above 50% precision). &ldquo;Naive&rdquo; does not mean
-  surfacing everything is optimal &mdash; the optimum filters at the
-  model&rsquo;s own &tau;*, which is above zero for every model.</li>
-<li><b>Baseline capability (JointPass@0)</b> &mdash; fraction of items whose
-  pre-feedback code is both functionally correct and vulnerability-free, on
-  the 51-item core benchmark (combined Semgrep+Bandit analyzer, multi-seed).</li>
-<li><b>HumanEval pass@1</b> &mdash; external functional-capability axis
-  (disjoint tasks, no security signal).</li>
-<li><b>in-sample</b> (Notes) &mdash; one of the five models used to
-  formulate the r-law; all others were measured prospectively.</li>
-</ul>
-<p>The headline: r falls steeply with capability (Spearman &minus;0.90) while
-q stays flat &mdash; <b>better models are less gullible</b> &mdash; so the
-right feedback policy is a property of the model and expires with every model
-update. One frontier model (Claude Fable&nbsp;5) could not be measured at
-all: its safety layer refused 9/10 benchmark requests.</p>
-</div>
-
-<footer>Updated {today} &middot;
-<a href="https://github.com/drchangliu/NoisyVerifierFeedback">code, raw
-traces &amp; methodology</a> &middot; paper: <em>Better Models Are Less Gullible:
-Selective Feedback for LLM Code Agents under Noisy Static Analysis</em> (under review at Empirical Software
-Engineering; submitted state:
-<a href="https://github.com/drchangliu/NoisyVerifierFeedback/releases/tag/emse-2026-07">
-tag emse-2026-07</a>) &middot; Chang Liu, Ohio University</footer>
-<script>
-(function() {{
-  var pts = document.querySelectorAll('.chart .pt');
-  function toggle(g) {{ g.classList.toggle('muted'); }}
-  pts.forEach(function(g) {{
-    g.addEventListener('click', function() {{ toggle(g); }});
-    g.addEventListener('keydown', function(e) {{
-      if (e.key === 'Enter' || e.key === ' ') {{ e.preventDefault(); toggle(g); }}
-    }});
-  }});
-  document.getElementById('showAll').onclick = function() {{
-    pts.forEach(function(g) {{ g.classList.remove('muted'); }}); }};
-  document.getElementById('hideAll').onclick = function() {{
-    pts.forEach(function(g) {{ g.classList.add('muted'); }}); }};
-}})();
-</script>
-</main></body></html>
-"""
+    html = _TEMPLATE
+    for k, v in {"__N__": str(n), "__NV__": str(nv), "__TODAY__": today,
+                 "__CHART__": chart, "__ROWS__": "".join(trs)}.items():
+        html = html.replace(k, v)
+    return html
 
 
 def main() -> None:
