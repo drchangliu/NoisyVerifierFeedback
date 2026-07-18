@@ -344,7 +344,16 @@ def html_page(rows, today):
          padding:2.5rem 1rem 4rem; }}
   main {{ max-width:1000px; margin:0 auto; }}
   h1 {{ font-size:1.7rem; line-height:1.25; letter-spacing:-0.01em; }}
-  .sub {{ color:var(--ink2); margin:0.6rem 0 1.6rem; max-width:46em; }}
+  .sub {{ color:var(--ink2); margin:0.6rem 0 1rem; max-width:48em; }}
+  .rates {{ margin:1rem 0 1.4rem; max-width:48em; border:1px solid var(--line);
+            border-radius:8px; background:#fff; padding:0.4rem 1rem; }}
+  .rates dt {{ font-weight:600; margin-top:0.7rem; }}
+  .rates dd {{ margin:0.15rem 0 0.2rem; color:var(--ink2); }}
+  .rates .f {{ font-family:"SFMono-Regular",Consolas,"Liberation Mono",
+               Menlo,monospace; background:#f3f2ec; border-radius:4px;
+               padding:0.05rem 0.35rem; color:var(--ink); white-space:nowrap; }}
+  .var {{ font-style:italic; }}
+  .interp {{ color:var(--ink2); margin:0 0 0.4rem; max-width:48em; }}
   .chartwrap {{ margin:1.4rem 0 0.4rem; }}
   .chart {{ width:100%; height:auto; border:1px solid var(--line);
             border-radius:8px; background:#fff; touch-action:manipulation; }}
@@ -402,12 +411,44 @@ def html_page(rows, today):
   a:hover {{ text-decoration:underline; }}
   footer {{ margin-top:2rem; color:var(--ink2); font-size:0.85rem; }}
 </style></head><body><main>
-<h1>Which LLMs can you trust with unfiltered static-analyzer feedback?</h1>
-<p class="sub">A live trust leaderboard of {n} models, ranked by the
-<b>counterfactual regression rate r</b>: the probability that the model,
-handed a <em>false-alarm</em> security finding about its own working code,
-&ldquo;fixes&rdquo; the non-problem and breaks the code. Lower is better
-&mdash; a low-r model recognizes false alarms instead of obeying them.</p>
+<h1>How much should each LLM trust its static analyzer &mdash; and how should
+you filter its findings?</h1>
+<p class="sub">AI coding agents fix static-analyzer findings in a loop, but
+most findings are false alarms (combined Semgrep+Bandit precision is
+<b>23.8%</b> on LLM-generated Python). The answer is neither to trust every
+finding nor to ignore them all, but to <b>filter per model</b>. From real
+fix-loop interactions we measure two rates and derive one threshold that
+tells you which findings a given model should even see.</p>
+
+<dl class="rates">
+<dt>Fix rate <span class="var">q</span>
+  <span class="f">q = (true findings fixed) / (true findings shown)</span></dt>
+<dd>Of <em>real</em> findings surfaced to the model, the fraction it correctly
+  fixes (secure <em>and</em> tests still pass). Higher is better.</dd>
+<dt>Regression rate <span class="var">r</span>
+  <span class="f">r = (working code broken) / (false alarms shown)</span></dt>
+<dd>Of <em>false</em> findings surfaced, the fraction where the model&rsquo;s
+  &ldquo;fix&rdquo; breaks working code. <b>Lower is better &mdash; this is the
+  ranking key.</b> A low-<span class="var">r</span> model recognizes false
+  alarms instead of obeying them.</dd>
+<dt>Surfacing threshold <span class="var">&tau;*</span>
+  <span class="f">&tau;* = r / (q + r)</span></dt>
+<dd>Surface a finding to this model only if its rule&rsquo;s historical
+  precision <span class="var">p</span> exceeds <span class="var">&tau;*</span>;
+  filter everything below. Low <span class="var">r</span> &rArr; low
+  <span class="var">&tau;*</span> &rArr; surface almost everything; high
+  <span class="var">r</span> &rArr; high <span class="var">&tau;*</span> &rArr;
+  filter aggressively.</dd>
+</dl>
+
+<p class="interp">In the table below, models are <b>ranked by
+<span class="var">r</span></b> (lowest first). Read across: a small
+<span class="var">&tau;*</span> means the model can safely see almost all
+findings; a large one means most should be filtered out. <b>Best fixed
+policy</b> names which of the two simple defaults &mdash; <em>naive</em>
+(surface everything) or <em>selective</em> (filter at 50% precision) &mdash;
+lands closer to that model&rsquo;s <span class="var">&tau;*</span>. This is a
+live leaderboard of {n} models, refreshed as new models ship.</p>
 
 <div class="chartwrap">{chart}</div>
 <div class="controls">
@@ -431,15 +472,10 @@ handed a <em>false-alarm</em> security finding about its own working code,
 <tbody>{''.join(trs)}</tbody></table></div>
 
 <div class="how">
+<p><b>More on the table columns</b> (the three rates <span class="var">q</span>,
+<span class="var">r</span>, <span class="var">&tau;*</span> are defined at the
+top):</p>
 <ul>
-<li><b>Regression rate r</b> &mdash; share of false-positive findings whose
-  &ldquo;fix&rdquo; broke working code. The ranking key: lower means the
-  model recognizes false alarms instead of obeying them.</li>
-<li><b>Fix rate q</b> &mdash; share of true positives the model actually
-  fixed (secure <em>and</em> tests still pass).</li>
-<li><b>Surfacing threshold &tau;* = r/(q+r)</b> &mdash; feed the model a
-  finding only if the rule&rsquo;s historical precision exceeds this
-  threshold.</li>
 <li><b>Best fixed policy</b> &mdash; the better of the two deployed fixed
   policies, <em>naive</em> (surface every finding) vs <em>selective</em>
   (only rules above 50% precision). &ldquo;Naive&rdquo; does not mean
