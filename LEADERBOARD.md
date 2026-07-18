@@ -4,7 +4,7 @@
 
 ![r falls with capability](docs/r_vs_capability.png)
 
-| # | Model | Developer | r (95% CI) | q | τ\* | Best fixed policy | JP@0 | HumanEval | FP/TP trials | Notes |
+| # | Model | Developer | r (95% CI) | q | τ\* | Better fixed policy | JP@0 | HumanEval | FP/TP trials | Notes |
 |--:|---|---|---|--:|--:|---|--:|--:|--:|---|
 | 1 | **Kimi-K2.7-code** | Moonshot | 0.13 [0.06, 0.24] | 0.35 | 0.27 | naive | 58.3% | 98.8% | 54/43 | added 2026-07-18 |
 | 2 | **Claude Opus 4.8** | Anthropic | 0.16 [0.09, 0.27] | 0.28 | 0.36 | naive | 62.5% | 99.4% | 57/36 |  |
@@ -36,7 +36,7 @@
 - **τ\* = r/(q+r)** — the minimum per-rule precision at which surfacing a
   finding helps this model more than it hurts. Feed the model a finding only
   if the rule's historical precision exceeds its τ\*.
-- **Best fixed policy** — the better of the two deployed fixed policies:
+- **Better fixed policy** — the better of the two deployed fixed policies:
   *naive* (surface everything) vs *selective* (surface only rules with >50%
   precision). "Naive" does **not** mean surfacing everything is optimal — the
   optimum filters at the model's own τ\*, which is above zero for every model.

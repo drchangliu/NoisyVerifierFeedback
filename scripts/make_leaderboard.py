@@ -118,7 +118,7 @@ def md_full(rows, today):
              "finding on its own working code, \"fixes\" it and breaks the "
              "code.*\n")
     L.append("![r falls with capability](docs/r_vs_capability.png)\n")
-    L.append("| # | Model | Developer | r (95% CI) | q | τ\\* | Best fixed "
+    L.append("| # | Model | Developer | r (95% CI) | q | τ\\* | Better fixed "
              "policy | JP@0 | HumanEval | FP/TP trials | Notes |")
     L.append("|--:|---|---|---|--:|--:|---|--:|--:|--:|---|")
     for i, m in enumerate(rows, 1):
@@ -142,7 +142,7 @@ def md_full(rows, today):
 - **τ\\* = r/(q+r)** — the minimum per-rule precision at which surfacing a
   finding helps this model more than it hurts. Feed the model a finding only
   if the rule's historical precision exceeds its τ\\*.
-- **Best fixed policy** — the better of the two deployed fixed policies:
+- **Better fixed policy** — the better of the two deployed fixed policies:
   *naive* (surface everything) vs *selective* (surface only rules with >50%
   precision). "Naive" does **not** mean surfacing everything is optimal — the
   optimum filters at the model's own τ\\*, which is above zero for every model.
@@ -186,7 +186,7 @@ def md_compact(rows, today):
              f"· [web version](https://drchangliu.github.io/NoisyVerifierFeedback/).*\n")
     L.append("![Regression rate r falls as model capability rises "
              "(16 models, rank correlation -0.89)](docs/r_vs_capability.png)\n")
-    L.append("| # | Model | r | τ\\* | Best fixed policy | HumanEval |")
+    L.append("| # | Model | r | τ\\* | Better fixed policy | HumanEval |")
     L.append("|--:|---|--:|--:|---|--:|")
     for i, m in enumerate(rows, 1):
         he = "—" if m["he"] is None else f"{m['he']:.1f}%"
@@ -286,7 +286,7 @@ def _interactive_svg(rows):
         lx = p["X"] - 11 if left else p["X"] + 11
         anchor = "end" if left else "start"
         tip = (f'{m["name"]}: r={m["r"]:.2f}, tau*={m["tau"]:.2f}, '
-               f'JP@0={m["cap"]:.1f}%, best fixed = {m["policy"]}')
+               f'JP@0={m["cap"]:.1f}%, better fixed = {m["policy"]}')
         parts.append(
             f'<g class="pt" tabindex="0" data-name="{m["name"]}">'
             f'<title>{tip}</title>'
@@ -444,7 +444,7 @@ tells you which findings a given model should even see.</p>
 <p class="interp">In the table below, models are <b>ranked by
 <span class="var">r</span></b> (lowest first). Read across: a small
 <span class="var">&tau;*</span> means the model can safely see almost all
-findings; a large one means most should be filtered out. <b>Best fixed
+findings; a large one means most should be filtered out. <b>Better fixed
 policy</b> names which of the two simple defaults &mdash; <em>naive</em>
 (surface everything) or <em>selective</em> (filter at 50% precision) &mdash;
 lands closer to that model&rsquo;s <span class="var">&tau;*</span>. This is a
@@ -465,7 +465,7 @@ live leaderboard of {n} models, refreshed as new models ship.</p>
 <th class="num">Regression rate r<br>(95% CI)</th>
 <th class="num">Fix rate q</th>
 <th class="num">Surfacing<br>threshold &tau;*</th>
-<th>Best fixed policy</th>
+<th>Better fixed policy</th>
 <th class="num">Baseline capability<br>(JointPass@0)</th>
 <th class="num">HumanEval<br>pass@1</th>
 <th class="num">FP / TP<br>trials</th></tr></thead>
@@ -476,7 +476,7 @@ live leaderboard of {n} models, refreshed as new models ship.</p>
 <span class="var">r</span>, <span class="var">&tau;*</span> are defined at the
 top):</p>
 <ul>
-<li><b>Best fixed policy</b> &mdash; the better of the two deployed fixed
+<li><b>Better fixed policy</b> &mdash; the better of the two deployed fixed
   policies, <em>naive</em> (surface every finding) vs <em>selective</em>
   (only rules above 50% precision). &ldquo;Naive&rdquo; does not mean
   surfacing everything is optimal &mdash; the optimum filters at the

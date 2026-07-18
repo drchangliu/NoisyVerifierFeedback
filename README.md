@@ -25,7 +25,7 @@ reproducible while the main branch moves on.
 
 ![Regression rate r falls as model capability rises (16 models, rank correlation -0.89)](docs/r_vs_capability.png)
 
-| # | Model | r | τ\* | Best fixed policy | HumanEval |
+| # | Model | r | τ\* | Better fixed policy | HumanEval |
 |--:|---|--:|--:|---|--:|
 | 1 | Kimi-K2.7-code | 0.13 | 0.27 | naive | 98.8% |
 | 2 | Claude Opus 4.8 | 0.16 | 0.36 | naive | 99.4% |
