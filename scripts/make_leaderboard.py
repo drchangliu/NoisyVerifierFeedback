@@ -69,6 +69,25 @@ VENDOR_COLOR = {"Alibaba": "#2a78d6", "Anthropic": "#1baf7a",
                 "Meta": "#4a3aa7", "Zhipu": "#e34948"}
 VENDOR_COLOR.update(EXTRA_VENDOR_COLORS)
 
+# Disclosed parameter counts (total; "MoE" = mixture-of-experts, far fewer
+# active per token). Em-dash where the developer does not disclose a size --
+# true of most frontier API models. Capability, not size, predicts r.
+PARAMS = {
+    "haiku-4.5": "\u2014", "sonnet4": "\u2014", "sonnet46": "\u2014",
+    "opus-4.8": "\u2014",
+    "gemma4-31b": "31B", "gemma3-27b": "27B",
+    "qwen3-8b": "8B", "qwen3-14b": "14B", "qwen3-32b": "32B",
+    "qwen3.5-27b": "27B", "qwen3.6-27b": "27B",
+    "qwen3-coder-480b(cloud)": "480B (MoE)",
+    "llama3.1-8b": "8B",
+    "deepseek-v2-16b": "16B (MoE)",
+    "deepseek-v4-flash(cloud)": "\u2014",
+    "glm-4.6(cloud)": "\u2014",
+}
+for _tag, _e in load_registry().items():
+    if _e.get("params"):
+        PARAMS[_e["cohort"]] = _e["params"]
+
 
 def collect():
     cap = defaultdict(list)
@@ -91,6 +110,7 @@ def collect():
             he=None if he is None else he * 100,
             tpt=d["tpt"], fpt=d["fpt"],
             insample=coh in IN_SAMPLE, retired=coh in RETIRED,
+            params=PARAMS.get(coh, "\u2014"),
         ))
     rows.sort(key=lambda x: x["r"])
     return rows
@@ -118,13 +138,13 @@ def md_full(rows, today):
              "finding on its own working code, \"fixes\" it and breaks the "
              "code.*\n")
     L.append("![r falls with capability](docs/r_vs_capability.png)\n")
-    L.append("| # | Model | Developer | r (95% CI) | q | τ\\* | Better fixed "
+    L.append("| # | Model | Developer | Params | r (95% CI) | q | τ\\* | Better fixed "
              "policy | JP@0 | HumanEval | FP/TP trials | Notes |")
-    L.append("|--:|---|---|---|--:|--:|---|--:|--:|--:|---|")
+    L.append("|--:|---|---|---|---|--:|--:|---|--:|--:|--:|---|")
     for i, m in enumerate(rows, 1):
         he = "—" if m["he"] is None else f"{m['he']:.1f}%"
         L.append(
-            f"| {i} | **{m['name']}** | {m['vendor']} "
+            f"| {i} | **{m['name']}** | {m['vendor']} | {m['params']} "
             f"| {m['r']:.2f} [{m['r_lo']:.2f}, {m['r_hi']:.2f}] "
             f"| {m['q']:.2f} | {m['tau']:.2f} | {m['policy']} "
             f"| {m['cap']:.1f}% | {he} | {m['fpt']}/{m['tpt']} "
@@ -518,6 +538,7 @@ _TEMPLATE = """<!doctype html>
   <div class="sec-label">The leaderboard &mdash; ranked by regression rate <span class="v">r</span> (lower is better)</div>
   <div class="tablewrap"><table>
   <thead><tr><th>#</th><th>Model</th><th>Developer</th>
+  <th class="num">Params</th>
   <th class="num">Regression rate r<br>(95% CI)</th>
   <th class="num">Fix rate q</th>
   <th class="num">Surfacing<br>threshold <span class="noup v">&tau;</span><span class="noup">*</span></th>
@@ -531,6 +552,7 @@ _TEMPLATE = """<!doctype html>
 <section class="how">
   <div class="sec-label">More on the columns</div>
   <ul>
+  <li><b>Params</b> &mdash; total parameters where the developer discloses them (<em>MoE</em> = mixture-of-experts, where far fewer are active per token); &ldquo;&mdash;&rdquo; = undisclosed, as for most frontier API models. <b>Note: capability, not size, predicts <span class="v">r</span></b> &mdash; the x-axis (JointPass@0) and HumanEval are the capability measures, and several small models resist false feedback better than larger ones.</li>
   <li><b>Better fixed policy</b> &mdash; the better of the two deployed fixed
     policies, <em>naive</em> (surface every finding) vs <em>selective</em>
     (only rules above 50% precision). &ldquo;Naive&rdquo; does not mean
@@ -603,6 +625,7 @@ def html_page(rows, today):
             f"<td class='model'>{dot}<span>{m['name']}</span>"
             + (f"<span class='note'>{note}</span>" if note else "") + "</td>"
             f"<td class='vend'>{m['vendor']}</td>"
+            f"<td class='num params'>{m['params']}</td>"
             f"<td class='num'><b>{m['r']:.2f}</b> <span class='ci'>"
             f"[{m['r_lo']:.2f}, {m['r_hi']:.2f}]</span></td>"
             f"<td class='num'>{m['q']:.2f}</td>"

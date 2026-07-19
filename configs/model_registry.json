@@ -7,7 +7,8 @@
     "added": "2026-07-18",
     "humaneval_label": "kimi-k2.7-code",
     "ollama_base_url": "http://localhost:11435",
-    "max_tokens": 16384
+    "max_tokens": 16384,
+    "params": "~1T (MoE)"
   },
   "gpt-oss:120b-cloud": {
     "cohort": "gpt-oss-120b(cloud)",
@@ -16,6 +17,27 @@
     "added": "2026-07-18",
     "humaneval_label": "gpt-oss-120b",
     "ollama_base_url": "http://localhost:11435",
-    "max_tokens": 16384
+    "max_tokens": 16384,
+    "params": "120B (MoE)"
+  },
+  "minimax-m2.7:cloud": {
+    "cohort": "minimax-m2.7(cloud)",
+    "display": "MiniMax-M2.7",
+    "vendor": "MiniMax",
+    "added": "2026-07-19",
+    "humaneval_label": "minimax-m2.7",
+    "ollama_base_url": "http://localhost:11435",
+    "max_tokens": 16384,
+    "params": "—"
+  },
+  "nemotron-3-super:cloud": {
+    "cohort": "nemotron-3-super(cloud)",
+    "display": "Nemotron-3-Super",
+    "vendor": "Nvidia",
+    "added": "2026-07-19",
+    "humaneval_label": "nemotron-3-super",
+    "ollama_base_url": "http://localhost:11435",
+    "max_tokens": 16384,
+    "params": "—"
   }
 }
