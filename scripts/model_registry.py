@@ -16,6 +16,8 @@ REGISTRY_PATH = ROOT / "configs" / "model_registry.json"
 EXTRA_VENDOR_COLORS = {
     "Moonshot": "#795548",
     "OpenAI": "#c2255c",
+    "MiniMax": "#e8590c",
+    "Nvidia": "#0c8599",
 }
 FALLBACK_VENDOR_COLOR = "#7f7f7f"
 

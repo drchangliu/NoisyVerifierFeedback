@@ -63,6 +63,7 @@ NUDGE = {
     "Sonnet 4.6": (10, 2), "Gemma4-31B": (-8, -8), "Qwen3-32B": (8, 6),
     "Sonnet 4": (12, -14), "Opus 4.8": (7, 7),
     "Kimi-K2.7-code": (-8, -14), "GPT-OSS-120B": (0, 14),
+    "MiniMax-M2.7": (-10, -13), "Nemotron-3-Super": (7, -12),
 }
 
 

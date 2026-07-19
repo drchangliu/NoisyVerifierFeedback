@@ -1,0 +1,16 @@
+benchmark:
+  name: "combined"
+  calibration_fraction: 0.0
+analyzer:
+  name: "combined"
+  timeout: 30
+feedback:
+  condition: "selective"
+agent:
+  model: "nemotron-3-super:cloud"
+  max_tokens: 16384
+  ollama_base_url: "http://localhost:11435"
+selective:
+  threshold_tau: 0.5
+llm_judge:
+  model: "claude-haiku-4-5-20251001"
