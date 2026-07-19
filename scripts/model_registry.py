@@ -15,6 +15,7 @@ REGISTRY_PATH = ROOT / "configs" / "model_registry.json"
 # Colors for vendors not in the original six-vendor palette.
 EXTRA_VENDOR_COLORS = {
     "Moonshot": "#795548",
+    "OpenAI": "#c2255c",
 }
 FALLBACK_VENDOR_COLOR = "#7f7f7f"
 

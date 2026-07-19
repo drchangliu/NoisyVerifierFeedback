@@ -8,5 +8,14 @@
     "humaneval_label": "kimi-k2.7-code",
     "ollama_base_url": "http://localhost:11435",
     "max_tokens": 16384
+  },
+  "gpt-oss:120b-cloud": {
+    "cohort": "gpt-oss-120b(cloud)",
+    "display": "GPT-OSS-120B",
+    "vendor": "OpenAI",
+    "added": "2026-07-18",
+    "humaneval_label": "gpt-oss-120b",
+    "ollama_base_url": "http://localhost:11435",
+    "max_tokens": 16384
   }
 }

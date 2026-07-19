@@ -58,10 +58,11 @@ VENDOR_COLOR.update(EXTRA_VENDOR_COLORS)
 
 # Hand-tuned label offsets (points) after visual inspection.
 NUDGE = {
-    "Qwen3-coder-480B": (0, 13), "DeepSeek-V4-flash": (8, -14),
+    "Qwen3-coder-480B": (0, 13), "DeepSeek-V4-flash": (-6, -13),
     "Haiku 4.5": (8, -4), "GLM-4.6": (10, 8), "Qwen3.5-27B": (-8, -16),
     "Sonnet 4.6": (10, 2), "Gemma4-31B": (-8, -8), "Qwen3-32B": (8, 6),
-    "Sonnet 4": (12, -14), "Opus 4.8": (-10, -14),
+    "Sonnet 4": (12, -14), "Opus 4.8": (7, 7),
+    "Kimi-K2.7-code": (-8, -14), "GPT-OSS-120B": (0, 14),
 }
 
 
