@@ -21,7 +21,7 @@ reproducible while the main branch moves on.
 ## Trust leaderboard
 
 <!-- LEADERBOARD:START -->
-*Ranked by the regression rate **r** — the probability the model breaks working code when handed a false-alarm security finding (lower = harder to mislead). Updated 2026-07-19. Full table, CIs, and methodology: [LEADERBOARD.md](LEADERBOARD.md) · [web version](https://drchangliu.github.io/NoisyVerifierFeedback/).*
+*Ranked by the regression rate **r** — the probability the model breaks working code when handed a false-alarm security finding (lower = harder to mislead). Updated 2026-07-20. Full table, CIs, and methodology: [LEADERBOARD.md](LEADERBOARD.md) · [web version](https://drchangliu.github.io/NoisyVerifierFeedback/).*
 
 ![Regression rate r falls as model capability rises (16 models, rank correlation -0.89)](docs/r_vs_capability.png)
 
@@ -29,24 +29,25 @@ reproducible while the main branch moves on.
 |--:|---|--:|--:|---|--:|
 | 1 | Kimi-K2.7-code | 0.13 | 0.27 | naive | 98.8% |
 | 2 | Nemotron-3-Super | 0.15 | 0.29 | naive | 97.0% |
-| 3 | Claude Opus 4.8 | 0.16 | 0.36 | naive | 99.4% |
-| 4 | Qwen3.5-27B | 0.17 | 0.33 | naive | 96.3% |
-| 5 | Claude Sonnet 4.6 | 0.19 | 0.30 | naive | 98.8% |
-| 6 | Gemma4-31B | 0.19 | 0.33 | naive | 100.0% |
-| 7 | GPT-OSS-120B | 0.21 | 0.29 | naive | 97.6% |
-| 8 | Claude Haiku 4.5 | 0.22 | 0.40 | naive | 96.3% |
-| 9 | Qwen3-coder-480B | 0.28 | 0.40 | naive | 96.3% |
-| 10 | DeepSeek-V4-flash | 0.28 | 0.31 | naive | 97.0% |
-| 11 | Qwen3-32B | 0.29 | 0.32 | naive | 97.6% |
-| 12 | GLM-4.6 | 0.29 | 0.36 | naive | — |
-| 13 | MiniMax-M2.7 | 0.35 | 0.40 | naive | 98.8% |
-| 14 | Llama3.1-8B | 0.37 | 0.47 | naive | 59.1% |
-| 15 | Claude Sonnet 4 | 0.41 | 0.64 | selective | — |
-| 16 | Qwen3-14B | 0.43 | 0.43 | naive | 96.3% |
-| 17 | Qwen3.6-27B | 0.48 | 0.49 | naive | 98.8% |
-| 18 | Qwen3-8B | 0.57 | 0.56 | selective | 93.9% |
-| 19 | DeepSeek-V2-16B | 0.57 | 0.62 | selective | 42.1% |
-| 20 | Gemma3-27B | 0.72 | 0.67 | selective | 87.8% |
+| 3 | GLM-5.2 | 0.15 | 0.32 | naive | 98.8% |
+| 4 | Claude Opus 4.8 | 0.16 | 0.36 | naive | 99.4% |
+| 5 | Qwen3.5-27B | 0.17 | 0.33 | naive | 96.3% |
+| 6 | Claude Sonnet 4.6 | 0.19 | 0.30 | naive | 98.8% |
+| 7 | Gemma4-31B | 0.19 | 0.33 | naive | 100.0% |
+| 8 | GPT-OSS-120B | 0.21 | 0.29 | naive | 97.6% |
+| 9 | Claude Haiku 4.5 | 0.22 | 0.40 | naive | 96.3% |
+| 10 | Qwen3-coder-480B | 0.28 | 0.40 | naive | 96.3% |
+| 11 | DeepSeek-V4-flash | 0.28 | 0.31 | naive | 97.0% |
+| 12 | Qwen3-32B | 0.29 | 0.32 | naive | 97.6% |
+| 13 | GLM-4.6 | 0.29 | 0.36 | naive | — |
+| 14 | MiniMax-M2.7 | 0.35 | 0.40 | naive | 98.8% |
+| 15 | Llama3.1-8B | 0.37 | 0.47 | naive | 59.1% |
+| 16 | Claude Sonnet 4 | 0.41 | 0.64 | selective | — |
+| 17 | Qwen3-14B | 0.43 | 0.43 | naive | 96.3% |
+| 18 | Qwen3.6-27B | 0.48 | 0.49 | naive | 98.8% |
+| 19 | Qwen3-8B | 0.57 | 0.56 | selective | 93.9% |
+| 20 | DeepSeek-V2-16B | 0.57 | 0.62 | selective | 42.1% |
+| 21 | Gemma3-27B | 0.72 | 0.67 | selective | 87.8% |
 <!-- LEADERBOARD:END -->
 
 ## Contents

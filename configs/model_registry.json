@@ -39,5 +39,15 @@
     "ollama_base_url": "http://localhost:11435",
     "max_tokens": 16384,
     "params": "—"
+  },
+  "glm-5.2:cloud": {
+    "cohort": "glm-5.2(cloud)",
+    "display": "GLM-5.2",
+    "vendor": "Zhipu",
+    "added": "2026-07-19",
+    "humaneval_label": "glm-5.2",
+    "ollama_base_url": "http://localhost:11435",
+    "max_tokens": 16384,
+    "params": "—"
   }
 }

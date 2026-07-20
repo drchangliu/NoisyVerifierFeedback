@@ -137,10 +137,15 @@ class LLMClient:
             },
         }
 
+        # Verbose reasoning models can exceed a 300s read on long generations;
+        # a longer wait changes no result, only avoids a premature kill.
+        # Override with OLLAMA_READ_TIMEOUT (seconds).
+        import os
+        read_timeout = float(os.environ.get("OLLAMA_READ_TIMEOUT", "300"))
         resp = requests.post(
             f"{self._ollama_base_url}/api/chat",
             json=payload,
-            timeout=300,
+            timeout=read_timeout,
         )
         resp.raise_for_status()
         data = resp.json()
