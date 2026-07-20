@@ -49,5 +49,15 @@
     "ollama_base_url": "http://localhost:11435",
     "max_tokens": 16384,
     "params": "—"
+  },
+  "deepseek-v4-pro:cloud": {
+    "cohort": "deepseek-v4-pro(cloud)",
+    "display": "DeepSeek-V4-pro",
+    "vendor": "DeepSeek",
+    "added": "2026-07-20",
+    "humaneval_label": "deepseek-v4-pro",
+    "ollama_base_url": "http://localhost:11435",
+    "max_tokens": 16384,
+    "params": "—"
   }
 }
